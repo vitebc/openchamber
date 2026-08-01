@@ -204,29 +204,45 @@ export function getWebviewHtml(options: WebviewHtmlOptions): string {
           var parsedLocale = JSON.parse(rawLocale);
           if (parsedLocale && typeof parsedLocale.locale === 'string' && parsedLocale.locale.toLowerCase().indexOf('fr') === 0) {
             locale = 'fr';
+          } else if (parsedLocale && typeof parsedLocale.locale === 'string' && parsedLocale.locale.toLowerCase().indexOf('ru') === 0) {
+            locale = 'ru';
           }
         }
       } catch {}
 
-      return locale === 'fr'
-        ? {
-            startingApi: 'Démarrage de l’API OpenCode…',
-            initializing: 'Initialisation…',
-            connecting: 'Connexion…',
-            connected: 'Connecté !',
-            connectionError: 'Erreur de connexion',
-            reconnecting: 'Reconnexion…',
-            cliNotFound: 'L’interface en ligne de commande OpenCode est introuvable. Veuillez l’installer d’abord.',
-          }
-        : {
-            startingApi: 'Starting OpenCode API…',
-            initializing: 'Initializing…',
-            connecting: 'Connecting…',
-            connected: 'Connected!',
-            connectionError: 'Connection error',
-            reconnecting: 'Reconnecting…',
-            cliNotFound: 'OpenCode CLI not found. Please install it first.',
-          };
+      if (locale === 'fr') {
+        return {
+          startingApi: 'Démarrage de l’API OpenCode…',
+          initializing: 'Initialisation…',
+          connecting: 'Connexion…',
+          connected: 'Connecté !',
+          connectionError: 'Erreur de connexion',
+          reconnecting: 'Reconnexion…',
+          cliNotFound: 'L’interface en ligne de commande OpenCode est introuvable. Veuillez l’installer d’abord.',
+        };
+      }
+
+      if (locale === 'ru') {
+        return {
+          startingApi: 'Запуск OpenCode API…',
+          initializing: 'Инициализация…',
+          connecting: 'Подключение…',
+          connected: 'Подключено!',
+          connectionError: 'Ошибка подключения',
+          reconnecting: 'Повторное подключение…',
+          cliNotFound: 'OpenCode CLI не найден. Пожалуйста, установите его.',
+        };
+      }
+
+      return {
+        startingApi: 'Starting OpenCode API…',
+        initializing: 'Initializing…',
+        connecting: 'Connecting…',
+        connected: 'Connected!',
+        connectionError: 'Connection error',
+        reconnecting: 'Reconnecting…',
+        cliNotFound: 'OpenCode CLI not found. Please install it first.',
+      };
     }
 
     (function applyBootstrapLocale() {
@@ -287,6 +303,12 @@ export function getWebviewHtml(options: WebviewHtmlOptions): string {
               return {
                 startingDevServer: (host) => 'Démarrage du serveur de développement de la webview (' + host + ')...',
                 waitingDevServer: (host, attempt) => 'En attente du serveur de développement de la webview (' + host + ')... tentative ' + attempt,
+              };
+            }
+            if (parsedLocale && typeof parsedLocale.locale === 'string' && parsedLocale.locale.toLowerCase().indexOf('ru') === 0) {
+              return {
+                startingDevServer: (host) => 'Запуск dev-сервера webview (' + host + ')...',
+                waitingDevServer: (host, attempt) => 'Ожидание dev-сервера webview (' + host + ')... попытка ' + attempt,
               };
             }
           }

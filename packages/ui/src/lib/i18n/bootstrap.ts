@@ -209,6 +209,25 @@ const JA_MESSAGES: BootstrapMessages = {
   loadingData: (providersText, agentsText) => `データを読み込み中 (${providersText}, ${agentsText})…`,
 };
 
+const RU_MESSAGES: BootstrapMessages = {
+  startingApi: 'Запуск OpenCode API…',
+  initializing: 'Инициализация…',
+  connecting: 'Подключение…',
+  connected: 'Подключено!',
+  connectionError: 'Ошибка подключения',
+  disconnected: 'Отключено',
+  reconnecting: 'Повторное подключение…',
+  initialDataLoadFailed: 'OpenCode подключен, но не удалось загрузить начальные данные.',
+  cliNotFound: 'OpenCode CLI не найден. Пожалуйста, установите его.',
+  providersReady: '✓ Провайдеры',
+  providersLoading: '… Провайдеры',
+  agentsReady: '✓ Агенты',
+  agentsLoading: '… Агенты',
+  startingDevServer: (hostLabel) => `Запуск dev-сервера webview (${hostLabel})...`,
+  waitingDevServer: (hostLabel, attempt) => `Ожидание dev-сервера webview (${hostLabel})... попытка ${attempt}`,
+  loadingData: (providersText, agentsText) => `Загрузка данных (${providersText}, ${agentsText})…`,
+};
+
 export const getBootstrapMessages = (locale: Locale): BootstrapMessages => {
   return BOOTSTRAP_MESSAGES[locale];
 };
@@ -224,6 +243,7 @@ const BOOTSTRAP_MESSAGES: Record<Locale, BootstrapMessages> = {
   ko: KO_MESSAGES,
   pl: PL_MESSAGES,
   ja: JA_MESSAGES,
+  ru: RU_MESSAGES,
 };
 
 export const readStoredLocaleForBootstrap = (): Locale => {

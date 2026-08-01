@@ -69,6 +69,22 @@ High-value anchors:
 - Electron: `packages/electron/README.md`
 - Mobile: `packages/mobile/README.md`
 
+## Localization (i18n)
+
+All user-facing text lives in `packages/ui/src/lib/i18n/`; every runtime (web, desktop, VS Code, mobile) consumes the shared UI. The `locale-ui-patterns` skill is canonical for string and key rules — never hardcode UI strings or ship English placeholders in non-English dictionaries.
+
+- Each locale is two files: `messages/<locale>.ts` (`dict`) and `messages/<locale>.settings.ts` (`settingsDict`, spread into `dict`). Every dictionary must have exactly the same keys as `en.ts`; `messages.test.ts` enforces this parity for each registered dictionary.
+- Adding a locale (e.g. `ru`) means editing every file in `packages/ui/src/lib/i18n/`, not just creating `messages/ru.ts`:
+  - `runtime.ts`: `Locale` union, `LOCALES`, `LOCALE_LABEL_KEYS` (add a `common.language.*` key to the union and maps), and `normalizeLocale` browser-language mapping.
+  - `store.ts`: add the locale to the hand-written lazy `import('./messages/...')` chain in `loadDictionary`.
+  - `bootstrap.ts`: add `<LOCALE>_MESSAGES` plus a `BOOTSTRAP_MESSAGES` entry — these strings render before the main dictionary loads (startup/connecting screens).
+  - `intl.ts`: map the locale to a BCP-47 tag (`ru` → `ru-RU`).
+  - `messages.test.ts`: import the new dict and register it in `localeDictionaries`.
+- Any key added to `en.ts` (e.g. `common.language.russian`) must also be added to every other dictionary or the parity test fails.
+- The Settings language picker is driven by `LOCALES` + `LOCALE_LABEL_KEYS`, so a new locale appears automatically once registered.
+- Locale persists under localStorage key `openchamber.i18n.v1` (`runtime.ts`) and switches re-render through `useI18n()` without a remount.
+- i18n tests use `bun:test` with no npm script; run `bun test` scoped to `packages/ui/src/lib/i18n/` plus `bun run type-check:ui`.
+
 ## Project Skills
 
 Project skills live under `.agents/skills/*/SKILL.md`. You **MUST** load every
