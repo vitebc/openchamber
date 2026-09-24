@@ -220,6 +220,8 @@ export function getWebviewHtml(options: WebviewHtmlOptions): string {
         locale = 'fr';
       } else if (detected.indexOf('tr') === 0) {
         locale = 'tr';
+      } else if (detected.indexOf('ru') === 0) {
+        locale = 'ru';
       }
 
       if (locale === 'fr') {
@@ -242,6 +244,17 @@ export function getWebviewHtml(options: WebviewHtmlOptions): string {
           connectionError: 'Bağlantı hatası',
           reconnecting: 'Yeniden bağlanıyor…',
           cliNotFound: 'OpenCode CLI bulunamadı. Lütfen önce kurun.',
+        };
+      }
+      if (locale === 'ru') {
+        return {
+          startingApi: 'Запуск OpenCode API…',
+          initializing: 'Инициализация…',
+          connecting: 'Подключение…',
+          connected: 'Подключено!',
+          connectionError: 'Ошибка подключения',
+          reconnecting: 'Переподключение…',
+          cliNotFound: 'OpenCode CLI не найден. Сначала установите его.',
         };
       }
       return {

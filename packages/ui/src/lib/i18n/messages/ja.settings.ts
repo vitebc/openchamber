@@ -1977,6 +1977,7 @@ export const settingsDict = {
   'settings.voice.page.tooltip.sttBrowser': 'Web Speech API（Chrome/Edge）。無料、設定不要。',
   'settings.voice.page.tooltip.sttServer': 'OpenAI 互換 Whisper サーバー。高精度、多言語対応。',
   'settings.voice.page.field.apiKey': 'API キー',
+  'settings.voice.page.field.apiKeyOptional': '任意',
   'settings.voice.page.field.apiKeyHintUsingConfig': '設定のキーを使用',
   'settings.voice.page.field.apiKeyHintRequired': 'OpenAI TTS には API キーが必要です',
   'settings.voice.page.field.apiKeyHintProvide': 'OpenAI キーを入力',

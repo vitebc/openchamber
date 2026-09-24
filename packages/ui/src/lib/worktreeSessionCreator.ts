@@ -5,6 +5,7 @@
  */
 
 import { toast } from '@/components/ui';
+import { formatMessage, useI18nStore, type I18nKey, type I18nParams } from '@/lib/i18n';
 import { useSessionUIStore } from '@/sync/session-ui-store';
 import { useProjectsStore } from '@/stores/useProjectsStore';
 import { useConfigStore } from '@/stores/useConfigStore';
@@ -29,6 +30,9 @@ import {
 import { waitForWorktreeBootstrap } from '@/lib/worktrees/worktreeBootstrap';
 import { normalizePath } from '@/lib/pathNormalization';
 import { resolveProjectForDirectory } from '@/lib/projectResolution';
+
+const translateToast = (key: I18nKey, params?: I18nParams): string =>
+  formatMessage(useI18nStore.getState().dictionary, key, params);
 
 const waitForWorktreeBootstrapIfEnabled = async (project: ProjectRef, directory: string): Promise<void> => {
   if (await getWorktreeSetupWaitEnabled(project)) {
@@ -188,8 +192,8 @@ const createInstantWorktreeDraft = async (options?: {
 
   const activeProject = useProjectsStore.getState().getActiveProject();
   if (!activeProject?.path) {
-    toast.error('No active project', {
-      description: 'Please select a project first.',
+    toast.error(translateToast('session.newWorktree.error.noActiveProject'), {
+      description: translateToast('sessions.scheduledTasks.dialog.error.chooseProjectFirst'),
     });
     return null;
   }
@@ -204,8 +208,8 @@ const createInstantWorktreeDraft = async (options?: {
   }
 
   if (!isGitRepo) {
-    toast.error('Not a Git repository', {
-      description: 'Worktrees can only be created in Git repositories.',
+    toast.error(translateToast('gitView.empty.notGitRepository'), {
+      description: translateToast('rightSidebar.contextNotesTodo.toast.worktreeRequiresGitRepo'),
     });
     return null;
   }
@@ -259,14 +263,14 @@ const createInstantWorktreeDraft = async (options?: {
 
     return metadata.path;
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Failed to create worktree';
+    const message = error instanceof Error ? error.message : translateToast('session.newWorktree.error.createWorktreeFailed');
     const requestId = useSessionUIStore.getState().newSessionDraft.pendingWorktreeRequestId;
     if (requestId) {
       rejectPendingDraftWorktreeRequest(requestId, error instanceof Error ? error : new Error(message));
       useSessionUIStore.getState().resolvePendingDraftWorktreeTarget(requestId, null);
     }
     useSessionUIStore.getState().setDraftBootstrapPendingDirectory(null);
-    toast.error('Failed to create worktree', {
+    toast.error(translateToast('session.newWorktree.error.createWorktreeFailed'), {
       description: message,
     });
     return null;
@@ -321,14 +325,14 @@ export async function createWorktreeSessionForNewBranch(
     const start = startPoint?.trim() || 'HEAD';
     const base = preferredBranchName?.trim();
     if (!base) {
-      throw new Error('Branch name is required');
+      throw new Error(translateToast('session.newWorktree.error.branchNameRequired'));
     }
 
     const kind = options?.kind ?? 'standard';
 
     const projectRef = resolveProjectRef(projectDirectory);
     if (!projectRef) {
-      throw new Error('Project is not registered in OpenChamber');
+      throw new Error(translateToast('session.newWorktree.error.projectNotRegistered'));
     }
 
     let isGitRepo = false;
@@ -339,8 +343,8 @@ export async function createWorktreeSessionForNewBranch(
     }
 
     if (!isGitRepo) {
-      toast.error('Not a Git repository', {
-        description: 'Worktrees can only be created in Git repositories.',
+      toast.error(translateToast('gitView.empty.notGitRepository'), {
+        description: translateToast('rightSidebar.contextNotesTodo.toast.worktreeRequiresGitRepo'),
       });
       return null;
     }
@@ -374,15 +378,15 @@ export async function createWorktreeSessionForNewBranch(
       const session = await sessionStore.createSession(undefined, metadata.path);
       if (!session) {
         await removeProjectWorktree(projectRef, metadata, { deleteLocalBranch: true }).catch(() => undefined);
-        throw new Error('Could not create a session for the worktree.');
+        throw new Error(translateToast('session.newWorktree.error.sessionCreateFailed'));
       }
 
       initializeSessionForWorktree(session.id, createdMetadata);
 
       return { id: session.id, branch: metadata.branch || base, path: metadata.path };
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to create worktree session';
-      toast.error('Failed to create worktree', { description: message });
+      const message = error instanceof Error ? error.message : translateToast('session.newWorktree.error.createWorktreeFailed');
+      toast.error(translateToast('session.newWorktree.error.createWorktreeFailed'), { description: message });
       return null;
     }
   } finally {

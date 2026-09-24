@@ -28,6 +28,7 @@ import { resolveProjectForSessionDirectory, normalizeProjectPath } from '@/lib/p
 import type { ProjectEntry } from '@/lib/api/types';
 import type { WorktreeMetadata } from '@/types/worktree';
 import { toast } from '@/components/ui';
+import { useI18n } from '@/lib/i18n';
 
 // Native tray/menu bar bridge. The Electron main process owns the Tray UI; this hook
 // streams a compact snapshot of live session/approval state to it via the
@@ -197,20 +198,26 @@ const buildUsage = (): TrayUsage => {
 };
 
 // Mirrors the header's instance resolution (Header.refreshCurrentInstanceLabel):
-// the local origin shows as "Local OpenChamber"; a remote host shows its
-// configured name. Async because the host config is read over IPC.
-const resolveInstanceName = async (): Promise<string> => {
+// the local origin shows as the localized "Local OpenChamber" label; a remote
+// host shows its configured name. Async because the host config is read over IPC.
+const resolveInstanceName = async ({
+  localName,
+  fallbackName,
+}: {
+  localName: string;
+  fallbackName: string;
+}): Promise<string> => {
   try {
-    if (isDesktopLocalOriginActive()) return 'Local OpenChamber';
+    if (isDesktopLocalOriginActive()) return localName;
     const localOrigin = (window as unknown as { __OPENCHAMBER_LOCAL_ORIGIN__?: string }).__OPENCHAMBER_LOCAL_ORIGIN__
       || window.location.origin;
     const runtimeApiBaseUrl = getRuntimeApiBaseUrl();
-    if (runtimeApiBaseUrl && locationMatchesHost(runtimeApiBaseUrl, localOrigin)) return 'Local OpenChamber';
+    if (runtimeApiBaseUrl && locationMatchesHost(runtimeApiBaseUrl, localOrigin)) return localName;
     const cfg = await desktopHostsGet();
     const match = cfg.hosts.find((host) =>
       runtimeApiBaseUrl ? locationMatchesHost(runtimeApiBaseUrl, getDesktopHostApiUrl(host)) : false);
     if (match?.label?.trim()) return redactSensitiveUrl(match.label.trim());
-    return 'Instance';
+    return fallbackName;
   } catch {
     return '';
   }
@@ -408,6 +415,8 @@ const buildSnapshot = (instanceName: string, includeTray: boolean): TraySnapshot
 };
 
 export const useTraySync = (): void => {
+  const { t } = useI18n();
+
   React.useEffect(() => {
     if (!isTrayPlatform() || !canUseElectronDesktopIPC()) return;
     const trayEnabled = isTrayEnabled();
@@ -458,7 +467,10 @@ export const useTraySync = (): void => {
       return stopBadgeSync;
     }
 
-    void resolveInstanceName().then((name) => {
+    void resolveInstanceName({
+      localName: t('desktopHostSwitcher.instance.localOpenChamber'),
+      fallbackName: t('desktopHostSwitcher.instance.fallback'),
+    }).then((name) => {
       if (disposed) return;
       instanceName = name;
       flushNow();
@@ -550,7 +562,7 @@ export const useTraySync = (): void => {
       for (const unsub of storeUnsubs.values()) unsub();
       storeUnsubs.clear();
     };
-  }, []);
+  }, [t]);
 
   React.useEffect(() => {
     if (!isTrayPlatform() || !isTrayEnabled() || !canUseElectronDesktopIPC()) return;
@@ -562,7 +574,7 @@ export const useTraySync = (): void => {
       switch (action.type) {
         case 'respond-permission':
           void respondToPermission(action.sessionId, action.id, action.response).catch(() => {
-            toast.error('Failed to respond to permission request');
+            toast.error(t('chat.permissionToast.respondFailed'));
           });
           break;
       }
@@ -585,5 +597,5 @@ export const useTraySync = (): void => {
         // ignore
       }
     };
-  }, []);
+  }, [t]);
 };

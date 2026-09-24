@@ -2055,11 +2055,15 @@ export const useSessionUIStore = create<SessionUIState>()((set, get) => ({
       await forkFromMessageAction(sessionId, messageId)
 
       const { toast } = await import("sonner")
-      toast.success(`Forked from ${existingSession.title}`)
+      const { useI18nStore, formatMessage } = await import("@/lib/i18n/store")
+      const { dictionary } = useI18nStore.getState()
+      toast.success(formatMessage(dictionary, "chat.messageBody.forkDialog.toast.forked", { title: existingSession.title }))
     } catch (error) {
       console.error("Failed to fork session:", error)
       const { toast } = await import("sonner")
-      toast.error("Failed to fork session")
+      const { useI18nStore, formatMessage } = await import("@/lib/i18n/store")
+      const { dictionary } = useI18nStore.getState()
+      toast.error(formatMessage(dictionary, "chat.messageBody.forkDialog.toast.forkFailed"))
     }
   },
 
@@ -2071,11 +2075,15 @@ export const useSessionUIStore = create<SessionUIState>()((set, get) => ({
       await forkAfterMessageAction(sessionId, messageId)
 
       const { toast } = await import("sonner")
-      toast.success(`Forked from ${existingSession.title}`)
+      const { useI18nStore, formatMessage } = await import("@/lib/i18n/store")
+      const { dictionary } = useI18nStore.getState()
+      toast.success(formatMessage(dictionary, "chat.messageBody.forkDialog.toast.forked", { title: existingSession.title }))
     } catch (error) {
       console.error("Failed to fork session:", error)
       const { toast } = await import("sonner")
-      toast.error("Failed to fork session")
+      const { useI18nStore, formatMessage } = await import("@/lib/i18n/store")
+      const { dictionary } = useI18nStore.getState()
+      toast.error(formatMessage(dictionary, "chat.messageBody.forkDialog.toast.forkFailed"))
     }
   },
 

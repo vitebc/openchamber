@@ -1906,6 +1906,7 @@ export const settingsDict = {
   'settings.voice.page.tooltip.sttBrowser': 'Web Speech API (Chrome/Edge). Kostenlos, keine Einrichtung.',
   'settings.voice.page.tooltip.sttServer': 'OpenAI-kompatibler Whisper-Server. Bessere Genauigkeit, beliebige Sprache.',
   'settings.voice.page.field.apiKey': 'API-Schlüssel',
+  'settings.voice.page.field.apiKeyOptional': 'Optional',
   'settings.voice.page.field.apiKeyHintUsingConfig': 'Verwendeter Schlüssel aus Konfiguration',
   'settings.voice.page.field.apiKeyHintRequired': 'OpenAI TTS benötigt einen API-Schlüssel',
   'settings.voice.page.field.apiKeyHintProvide': 'Geben Sie Ihren OpenAI-Schlüssel ein',

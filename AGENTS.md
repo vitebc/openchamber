@@ -84,13 +84,15 @@ High-value anchors:
 
 All user-facing text lives in `packages/ui/src/lib/i18n/`; every runtime (web, desktop, VS Code, mobile) consumes the shared UI. The `locale-ui-patterns` skill is canonical for string and key rules — never hardcode UI strings or ship English placeholders in non-English dictionaries.
 
-- Each locale is two files: `messages/<locale>.ts` (`dict`) and `messages/<locale>.settings.ts` (`settingsDict`, spread into `dict`). Every dictionary must have exactly the same keys as `en.ts`; `messages.test.ts` enforces this parity for each registered dictionary.
+- Each locale is two files: `messages/<locale>.ts` (`dict`) and `messages/<locale>.settings.ts` (`settingsDict`, spread into `dict`). Feature strings live in `messages/*.i18n.ts` modules (one object per locale, spread into the dicts: 8 into `dict`, 3 into `settingsDict`); each module has a `*.i18n.test.ts` parity test. Every dictionary must have exactly the same keys as `en.ts`; `messages.test.ts` enforces this parity for each registered dictionary.
 - Adding a locale (e.g. `ru`) means editing every file in `packages/ui/src/lib/i18n/`, not just creating `messages/ru.ts`:
   - `runtime.ts`: `Locale` union, `LOCALES`, `LOCALE_LABEL_KEYS` (add a `common.language.*` key to the union and maps), and `normalizeLocale` browser-language mapping.
   - `store.ts`: add the locale to the hand-written lazy `import('./messages/...')` chain in `loadDictionary`.
-  - `bootstrap.ts`: add `<LOCALE>_MESSAGES` plus a `BOOTSTRAP_MESSAGES` entry — these strings render before the main dictionary loads (startup/connecting screens).
+  - `bootstrap.ts`: add `<LOCALE>_MESSAGES` plus a `BOOTSTRAP_MESSAGES` entry — these strings render before the main dictionary loads (startup/connecting screens). Mirror the new locale in `packages/vscode/src/webviewHtml.ts` (`getBootstrapMessages`), which carries its own splash-string subset.
   - `intl.ts`: map the locale to a BCP-47 tag (`ru` → `ru-RU`).
   - `messages.test.ts`: import the new dict and register it in `localeDictionaries`.
+  - Every `messages/*.i18n.ts` module: add a `<locale>` block with real translations, and add the locale to the `locales` array in its `*.i18n.test.ts`.
+- Module tests forbid values identical to English except for keys they explicitly exempt (brand names like `Linear`, the `usage-stats` `SAME_AS_ENGLISH` set); transliterating a product name to dodge the check is a defect — product names stay literal per `locale-ui-patterns`, and only test-exempted keys may match English.
 - Any key added to `en.ts` (e.g. `common.language.russian`) must also be added to every other dictionary or the parity test fails.
 - The Settings language picker is driven by `LOCALES` + `LOCALE_LABEL_KEYS`, so a new locale appears automatically once registered.
 - Locale persists under localStorage key `openchamber.i18n.v1` (`runtime.ts`) and switches re-render through `useI18n()` without a remount.

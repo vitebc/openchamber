@@ -19,9 +19,9 @@ import { getRuntimeApiBaseUrl, getRuntimeKey } from '@/lib/runtime-switch';
 
 export const LOCAL_HOST_ID = 'local';
 
-export const buildLocalDesktopHost = (localOrigin?: string | null): DesktopHost => ({
+export const buildLocalDesktopHost = (localOrigin?: string | null, localLabel = 'Local'): DesktopHost => ({
   id: LOCAL_HOST_ID,
-  label: 'Local',
+  label: localLabel,
   url: localOrigin || getLocalDesktopOrigin(),
 });
 
@@ -41,7 +41,11 @@ type ResolvedDesktopHost = {
   url: string;
 };
 
-export const resolveCurrentDesktopHost = (hosts: DesktopHost[]): ResolvedDesktopHost => {
+export const resolveCurrentDesktopHost = (
+  hosts: DesktopHost[],
+  localLabel = 'Local',
+  fallbackLabel = 'Instance',
+): ResolvedDesktopHost => {
   const currentHref = typeof window === 'undefined' ? '' : window.location.href;
   const localOrigin = hosts.find((host) => host.id === LOCAL_HOST_ID)?.url || getLocalDesktopOrigin();
   const runtimeApiBaseUrl = getRuntimeApiBaseUrl();
@@ -58,7 +62,7 @@ export const resolveCurrentDesktopHost = (hosts: DesktopHost[]): ResolvedDesktop
   }
 
   if (runtimeApiBaseUrl && locationMatchesHost(runtimeApiBaseUrl, localOrigin)) {
-    return { id: LOCAL_HOST_ID, label: 'Local', url: normalizedLocal };
+    return { id: LOCAL_HOST_ID, label: localLabel, url: normalizedLocal };
   }
 
   const runtimeMatch = hosts.find((host) => (
@@ -74,7 +78,7 @@ export const resolveCurrentDesktopHost = (hosts: DesktopHost[]): ResolvedDesktop
   }
 
   if (currentHref && locationMatchesHost(currentHref, localOrigin)) {
-    return { id: LOCAL_HOST_ID, label: 'Local', url: normalizedLocal };
+    return { id: LOCAL_HOST_ID, label: localLabel, url: normalizedLocal };
   }
 
   const match = hosts.find((host) => (currentHref ? locationMatchesHost(currentHref, host.url) : false));
@@ -84,14 +88,14 @@ export const resolveCurrentDesktopHost = (hosts: DesktopHost[]): ResolvedDesktop
   }
 
   if (currentHref.startsWith('openchamber-ui://')) {
-    return { id: LOCAL_HOST_ID, label: 'Local', url: normalizedLocal };
+    return { id: LOCAL_HOST_ID, label: localLabel, url: normalizedLocal };
   }
 
   // Nothing configured matches. Naming the address is still more use than the
-  // bare word "Instance"; the redaction strips anything credential-shaped.
+  // bare fallback word; the redaction strips anything credential-shaped.
   return {
     id: 'custom',
-    label: redactSensitiveUrl(normalizedCurrent || 'Instance'),
+    label: redactSensitiveUrl(normalizedCurrent || fallbackLabel),
     url: normalizedCurrent,
   };
 };

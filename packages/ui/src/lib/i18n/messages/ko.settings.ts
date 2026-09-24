@@ -1944,6 +1944,7 @@ export const settingsDict = {
   'settings.voice.page.tooltip.sttBrowser': 'Web Speech API(Chrome/Edge). 무료, 설정 불필요.',
   'settings.voice.page.tooltip.sttServer': 'OpenAI 호환 Whisper 서버입니다. 정확도가 더 높고 모든 언어를 지원합니다.',
   'settings.voice.page.field.apiKey': 'API Key',
+  'settings.voice.page.field.apiKeyOptional': '선택 사항',
   'settings.voice.page.field.apiKeyHintUsingConfig': '설정의 키를 사용 중',
   'settings.voice.page.field.apiKeyHintRequired': 'OpenAI TTS에는 API key가 필요합니다',
   'settings.voice.page.field.apiKeyHintProvide': 'OpenAI 키를 제공하세요',

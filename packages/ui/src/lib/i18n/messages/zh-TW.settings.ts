@@ -1834,6 +1834,7 @@ export const settingsDict = {
   'settings.voice.page.tooltip.sttBrowser': 'Web Speech API（Chrome/Edge）。免費，無須設定。',
   'settings.voice.page.tooltip.sttServer': 'OpenAI 相容 Whisper 伺服器。準確率更高，支援任意語言。',
   'settings.voice.page.field.apiKey': 'API Key',
+  'settings.voice.page.field.apiKeyOptional': '可選',
   'settings.voice.page.field.apiKeyHintUsingConfig': '使用設定中的金鑰',
   'settings.voice.page.field.apiKeyHintRequired': 'OpenAI TTS 需要 API Key',
   'settings.voice.page.field.apiKeyHintProvide': '提供你的 OpenAI Key',

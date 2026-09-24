@@ -2208,6 +2208,7 @@ export const settingsDict = {
   'settings.view.unavailable.title': 'Niedostępne',
   'settings.voice.page.actions.preview': 'Podgląd',
   'settings.voice.page.field.apiKey': 'Klucz API',
+  'settings.voice.page.field.apiKeyOptional': 'Opcjonalne',
   'settings.voice.page.field.apiKeyHintProvide': 'Podaj swój klucz OpenAI',
   'settings.voice.page.field.apiKeyHintRequired': 'OpenAI TTS wymaga klucza API',
   'settings.voice.page.field.apiKeyHintUsingConfig': 'Użyto klucza z konfiguracji',

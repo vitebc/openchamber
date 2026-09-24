@@ -404,7 +404,7 @@ export const Header: React.FC = () => {
   }, [contextUsage, currentSessionId, isContextUsageResolvedForSession]);
 
   const [isDesktopServicesOpen, setIsDesktopServicesOpen] = React.useState(false);
-  const [currentInstanceLabel, setCurrentInstanceLabel] = React.useState('Local');
+  const [currentInstanceLabel, setCurrentInstanceLabel] = React.useState(() => t('desktopHostSwitcher.instance.local'));
   const [currentInstanceIsLocal, setCurrentInstanceIsLocal] = React.useState(true);
   const [remoteUpdateDialogOpen, setRemoteUpdateDialogOpen] = React.useState(false);
   const [remoteUpdateInfo, setRemoteUpdateInfo] = React.useState<UpdateInfo | null>(null);
@@ -447,7 +447,7 @@ export const Header: React.FC = () => {
 
     try {
       if (isDesktopLocalOriginActive()) {
-        setCurrentInstanceLabel('Local');
+        setCurrentInstanceLabel(t('desktopHostSwitcher.instance.local'));
         setCurrentInstanceIsLocal(true);
         return;
       }
@@ -457,20 +457,24 @@ export const Header: React.FC = () => {
       // the panel it opens can never disagree about which instance this is.
       const cfg = await desktopHostsGet();
       const localOrigin = getLocalDesktopOrigin();
-      const resolved = resolveCurrentDesktopHost([buildLocalDesktopHost(localOrigin), ...cfg.hosts]);
+      const resolved = resolveCurrentDesktopHost(
+        [buildLocalDesktopHost(localOrigin, t('desktopHostSwitcher.instance.local')), ...cfg.hosts],
+        t('desktopHostSwitcher.instance.local'),
+        t('desktopHostSwitcher.instance.fallback'),
+      );
 
       if (resolved.id === LOCAL_HOST_ID) {
-        setCurrentInstanceLabel('Local');
+        setCurrentInstanceLabel(t('desktopHostSwitcher.instance.local'));
         setCurrentInstanceIsLocal(true);
         return;
       }
 
-      setCurrentInstanceLabel(redactSensitiveUrl(resolved.label.trim() || 'Instance'));
+      setCurrentInstanceLabel(redactSensitiveUrl(resolved.label.trim() || t('desktopHostSwitcher.instance.fallback')));
     } catch {
-      setCurrentInstanceLabel('Local');
+      setCurrentInstanceLabel(t('desktopHostSwitcher.instance.local'));
       setCurrentInstanceIsLocal(true);
     }
-  }, [isDesktopApp]);
+  }, [isDesktopApp, t]);
 
   useEffect(() => {
     void refreshCurrentInstanceLabel();

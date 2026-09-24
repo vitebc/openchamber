@@ -287,13 +287,13 @@ export function DesktopHostSwitcherDialog({
   const sshSwitchTokenRef = React.useRef(0);
 
   const allHosts = React.useMemo(() => {
-    const local = buildLocalDesktopHost(localOrigin);
+    const local = buildLocalDesktopHost(localOrigin, t('desktopHostSwitcher.instance.local'));
     const normalizedRemote = configHosts.map((h) => ({
       ...h,
       url: normalizeHostUrl(h.url) || h.url,
     }));
     return [local, ...normalizedRemote];
-  }, [configHosts, localOrigin]);
+  }, [configHosts, localOrigin, t]);
 
   React.useEffect(() => {
     return subscribeRuntimeEndpointChanged(() => setRuntimeEndpointEpoch((epoch) => epoch + 1));
@@ -301,8 +301,12 @@ export function DesktopHostSwitcherDialog({
 
   const current = React.useMemo(() => {
     void runtimeEndpointEpoch;
-    return resolveCurrentDesktopHost(allHosts);
-  }, [allHosts, runtimeEndpointEpoch]);
+    return resolveCurrentDesktopHost(
+      allHosts,
+      t('desktopHostSwitcher.instance.local'),
+      t('desktopHostSwitcher.instance.fallback'),
+    );
+  }, [allHosts, runtimeEndpointEpoch, t]);
   const currentDefaultLabel = React.useMemo(() => {
     const id = defaultHostId || LOCAL_HOST_ID;
     return allHosts.find((h) => h.id === id)?.label || t('desktopHostSwitcher.instance.local');

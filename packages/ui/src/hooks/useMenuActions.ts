@@ -7,6 +7,7 @@ import { useProjectsStore } from '@/stores/useProjectsStore';
 import { normalizeContextPanelDirectoryKey, useUIStore } from '@/stores/useUIStore';
 import { useUpdateStore } from '@/stores/useUpdateStore';
 import { useThemeSystem } from '@/contexts/useThemeSystem';
+import { useI18n } from '@/lib/i18n';
 import { sessionEvents } from '@/lib/sessionEvents';
 import { createWorktreeSession } from '@/lib/worktreeSessionCreator';
 import { showOpenCodeStatus } from '@/lib/openCodeStatus';
@@ -105,6 +106,7 @@ export const useMenuActions = (
   const setSettingsDialogOpen = useUIStore((s) => s.setSettingsDialogOpen);
   const setAboutDialogOpen = useUIStore((s) => s.setAboutDialogOpen);
   const checkForUpdates = useUpdateStore((state) => state.checkForUpdates);
+  const { t } = useI18n();
   const { setThemeMode } = useThemeSystem();
   const checkUpdatesInFlightRef = React.useRef(false);
 
@@ -118,20 +120,20 @@ export const useMenuActions = (
       .then(() => {
         const { available, error } = useUpdateStore.getState();
         if (error) {
-          toast.error('Failed to check for updates', {
+          toast.error(t('sessions.sidebar.updateCheck.errorTitle'), {
             description: error,
           });
           return;
         }
 
         if (!available) {
-          toast.success('You are on the latest version');
+          toast.success(t('sessions.sidebar.updateCheck.latestVersion'));
         }
       })
       .finally(() => {
         checkUpdatesInFlightRef.current = false;
       });
-  }, [checkForUpdates]);
+  }, [checkForUpdates, t]);
 
   const handleChangeWorkspace = React.useCallback(() => {
     sessionEvents.requestDirectoryDialog();
@@ -324,7 +326,7 @@ export const useMenuActions = (
 
         case 'download-logs': {
           void showOpenCodeStatus().catch(() => {
-            toast.error('Failed to collect OpenCode status');
+            toast.error(t('openCodeStatusDialog.toast.collectFailed'));
           });
           break;
         }
@@ -341,6 +343,7 @@ export const useMenuActions = (
       setCommandPaletteOpen,
       setSettingsDialogOpen,
       setThemeMode,
+      t,
       toggleCommandPalette,
       toggleHelpDialog,
       toggleSidebar,
