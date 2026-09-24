@@ -1,4 +1,4 @@
-import type { Session } from '@opencode-ai/sdk/v2';
+import type { Session } from '@/lib/opencode/model';
 import type { WorktreeMetadata } from '@/types/worktree';
 
 export type SessionNode = {
@@ -29,6 +29,8 @@ export type SessionGroup = {
    * instead of reading the single folderScopeKey.
    */
   folderScopes?: SessionGroupFolderScope[];
+  draftTarget?: 'chat' | 'project';
+  emptyMessage?: string;
   sessions: SessionNode[];
 };
 

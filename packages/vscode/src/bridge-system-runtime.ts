@@ -3,14 +3,40 @@ import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { randomUUID } from 'crypto';
-import { removeProviderConfig, getProviderSources } from './opencodeConfig';
-import { getProviderAuth, removeProviderAuth } from './opencodeAuth';
+import { getProviderSources, upsertProviderConfig } from './opencodeConfig';
+import { getProviderAuth } from './opencodeAuth';
+import { OpenCode } from '@opencode/client';
+import { asSessionId, asSessionIdList, asSessionMetadata, asTimestamp, parseJson, type JsonValue, type SessionMetadataOnOpenCode, type SessionStateStore } from './openchamberSessionState';
+import type { OpenCodeManager } from './opencode';
 import { fetchQuotaForProvider, listConfiguredQuotaProviders } from './quotaProviders';
-import { fetchOpenCodeGoUsage } from './opencodeGoQuota';
 import { credentialStatus, deleteCredential, importCursorCredential, normalizeCredential, readCredential, validateCredential, writeCredential, type ManagedProvider } from './quotaCredentials';
 import { getSessionActivitySnapshot } from './sessionActivityWatcher';
 import { getOpenCodeUpgradeStatus, upgradeManagedOpenCode } from './opencode-upgrade-runtime';
+import { normalizeWindowsDriveLetter, pathsEqualWithNormalizedDriveLetter } from './pathUtils';
+import { resolveWorkspaceFolders } from './workspaceResolver';
 import type { BridgeContext, BridgeResponse } from './bridge';
+
+const isSessionNotFound = (error: Error): boolean => error.name === 'SessionNotFoundError';
+
+/** Session metadata on the OpenCode instance this window manages. */
+const sessionMetadataOnOpenCode = (manager: OpenCodeManager | undefined): SessionMetadataOnOpenCode => {
+  const apiUrl = manager?.getApiUrl();
+  if (!manager || !apiUrl) throw new Error('OpenCode is not available');
+  const client = OpenCode.make({ baseUrl: apiUrl.replace(/\/+$/, ''), headers: manager.getOpenCodeAuthHeaders() });
+  return {
+    read: async (sessionID) => {
+      try {
+        const session = await client.session.get({ sessionID });
+        // Round-trip through JSON: the wire type is opaque JSON, the store's is `JsonValue`.
+        return asSessionMetadata(parseJson(JSON.stringify(session.metadata ?? {})) ?? undefined) ?? {};
+      } catch (error) {
+        if (error instanceof Error && isSessionNotFound(error)) return null;
+        throw error;
+      }
+    },
+    write: (sessionID, metadata) => client.session.update({ sessionID, metadata }),
+  };
+};
 
 type BridgeMessageInput = {
   id: string;
@@ -20,6 +46,7 @@ type BridgeMessageInput = {
 
 type SystemRuntimeDeps = {
   resolveUserPath: (value: string, baseDirectory: string) => string;
+  sessionState: SessionStateStore;
   fetchModelsMetadata: () => Promise<unknown>;
   updateCheckUrl: string;
   clientReloadDelayMs: number;
@@ -254,7 +281,8 @@ export async function handleSystemBridgeMessage(
           return { id, type, success: true, data: { version: null, error: 'OpenCode manager unavailable' } };
         }
         const base = `${apiUrl.replace(/\/+$/, '')}/`;
-        const response = await fetch(new URL('global/health', base).toString(), {
+        // OpenCode 2.0.8 replaced `/api/health` with `/api/info`.
+        const response = await fetch(new URL('api/info', base).toString(), {
           method: 'GET',
           headers: { Accept: 'application/json', ...ctx?.manager?.getOpenCodeAuthHeaders() },
         });
@@ -273,13 +301,22 @@ export async function handleSystemBridgeMessage(
       }
     }
 
+    case 'api:opencode/compatibility': {
+      return { id, type, success: true, data: await ctx?.manager?.getCompatibility() };
+    }
+
+    case 'api:opencode/install-v2': {
+      if (!ctx?.manager) return { id, type, success: false, error: 'OpenCode manager is unavailable.' };
+      await ctx.manager.installV2();
+      return { id, type, success: true, data: { success: true } };
+    }
+
     case 'api:opencode/upgrade-status': {
       return { id, type, success: true, data: await getOpenCodeUpgradeStatus(ctx?.manager) };
     }
 
     case 'api:opencode/upgrade': {
-      const target = (payload as { target?: unknown } | undefined)?.target;
-      return { id, type, success: true, data: await upgradeManagedOpenCode(ctx?.manager, target) };
+      return { id, type, success: true, data: await upgradeManagedOpenCode(ctx?.manager) };
     }
 
     case 'api:session-activity:get': {
@@ -356,13 +393,12 @@ export async function handleSystemBridgeMessage(
     case 'editor:openFile': {
       const { path: filePath, line, column } = payload as { path: string; line?: number; column?: number };
       try {
-        const doc = await vscode.workspace.openTextDocument(filePath);
         const options: vscode.TextDocumentShowOptions = {};
         if (typeof line === 'number') {
           const pos = new vscode.Position(Math.max(0, line - 1), column || 0);
           options.selection = new vscode.Range(pos, pos);
         }
-        await vscode.window.showTextDocument(doc, options);
+        await vscode.commands.executeCommand('vscode.open', vscode.Uri.file(filePath), options);
         return { id, type, success: true };
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -416,53 +452,45 @@ export async function handleSystemBridgeMessage(
       }
     }
 
-    case 'api:provider/auth:delete': {
-      const { providerId, scope, directory } = (payload || {}) as { providerId?: string; scope?: string; directory?: string };
-      if (!providerId) {
-        return { id, type, success: false, error: 'Provider ID is required' };
-      }
-      const normalizedScope = typeof scope === 'string' ? scope : 'auth';
-      const workingDirectory = typeof directory === 'string' && directory.trim().length > 0
-        ? directory.trim()
-        : ctx?.manager?.getWorkingDirectory();
-      try {
-        let removed = false;
-        if (normalizedScope === 'auth') {
-          removed = removeProviderAuth(providerId);
-        } else if (normalizedScope === 'user' || normalizedScope === 'project' || normalizedScope === 'custom') {
-          removed = removeProviderConfig(providerId, workingDirectory, normalizedScope);
-        } else if (normalizedScope === 'all') {
-          const authRemoved = removeProviderAuth(providerId);
-          const userRemoved = removeProviderConfig(providerId, workingDirectory, 'user');
-          const projectRemoved = workingDirectory
-            ? removeProviderConfig(providerId, workingDirectory, 'project')
-            : false;
-          const customRemoved = removeProviderConfig(providerId, workingDirectory, 'custom');
-          removed = authRemoved || userRemoved || projectRemoved || customRemoved;
-        } else {
-          return { id, type, success: false, error: 'Invalid scope' };
-        }
+    // OpenChamber-owned session state. OpenCode 2.x has no route that sets
+    // `time.archived` or rewrites metadata after creation; the web server keeps
+    // both in files, and the extension host keeps the same files (see
+    // openchamberSessionState.ts). The proxy runtime folds them back onto
+    // session reads.
+    case 'api:sessions/archive': {
+      const { ids, archivedAt } = (payload || {}) as { ids?: JsonValue; archivedAt?: JsonValue };
+      const targets = asSessionIdList(ids);
+      if (targets.length === 0) return { id, type, success: false, error: 'ids must be a non-empty array of session ids' };
+      return { id, type, success: true, data: await deps.sessionState.archive(targets, asTimestamp(archivedAt)) };
+    }
 
-        if (removed) {
-          await ctx?.manager?.restart();
-        }
-        return {
-          id,
-          type,
-          success: true,
-          data: {
-            success: true,
-            removed,
-            requiresReload: removed,
-            message: removed
-              ? `Provider ${providerId} disconnected successfully. Reloading interface…`
-              : `Provider ${providerId} was not configured.`,
-            reloadDelayMs: removed ? deps.clientReloadDelayMs : undefined,
-          },
-        };
+    case 'api:sessions/unarchive': {
+      const { ids } = (payload || {}) as { ids?: JsonValue };
+      const targets = asSessionIdList(ids);
+      if (targets.length === 0) return { id, type, success: false, error: 'ids must be a non-empty array of session ids' };
+      return { id, type, success: true, data: await deps.sessionState.unarchive(targets) };
+    }
+
+    case 'api:sessions/metadata:get': {
+      const sessionId = asSessionId(((payload || {}) as { sessionId?: JsonValue }).sessionId);
+      if (!sessionId) return { id, type, success: false, error: 'a session id is required' };
+      try {
+        return { id, type, success: true, data: { metadata: await deps.sessionState.getMetadata(sessionId, sessionMetadataOnOpenCode(ctx?.manager)) } };
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        return { id, type, success: false, error: errorMessage };
+        return { id, type, success: false, error: error instanceof Error ? error.message : String(error) };
+      }
+    }
+
+    case 'api:sessions/metadata:set': {
+      const body = (payload || {}) as { sessionId?: JsonValue; patch?: JsonValue };
+      const sessionId = asSessionId(body.sessionId);
+      if (!sessionId) return { id, type, success: false, error: 'a session id is required' };
+      const patch = asSessionMetadata(body.patch);
+      if (!patch) return { id, type, success: false, error: 'patch must be an object' };
+      try {
+        return { id, type, success: true, data: { metadata: await deps.sessionState.setMetadata(sessionId, patch, sessionMetadataOnOpenCode(ctx?.manager)) } };
+      } catch (error) {
+        return { id, type, success: false, error: error instanceof Error ? error.message : String(error) };
       }
     }
 
@@ -485,6 +513,64 @@ export async function handleSystemBridgeMessage(
       }
     }
 
+    case 'api:provider:upsert': {
+      const {
+        providerID,
+        providerId: providerIdAlias,
+        config,
+        scope,
+        directory,
+      } = (payload || {}) as {
+        providerID?: string;
+        providerId?: string;
+        config?: unknown;
+        scope?: string;
+        directory?: string;
+      };
+      const providerId = (typeof providerID === 'string' && providerID.trim())
+        || (typeof providerIdAlias === 'string' && providerIdAlias.trim())
+        || '';
+      if (!providerId) {
+        return { id, type, success: false, error: 'Provider ID is required' };
+      }
+      if (!config || typeof config !== 'object' || Array.isArray(config)) {
+        return { id, type, success: false, error: 'Provider config is required' };
+      }
+      const normalizedScope = typeof scope === 'string' ? scope : 'user';
+      if (normalizedScope !== 'user' && normalizedScope !== 'project' && normalizedScope !== 'custom') {
+        return { id, type, success: false, error: 'Invalid scope' };
+      }
+      try {
+        const workingDirectory = typeof directory === 'string' && directory.trim().length > 0
+          ? directory.trim()
+          : ctx?.manager?.getWorkingDirectory();
+        const result = upsertProviderConfig(
+          providerId,
+          config,
+          workingDirectory,
+          normalizedScope,
+          { hasStoredAuth: Boolean(getProviderAuth(providerId)) },
+        );
+        await ctx?.manager?.restart();
+        return {
+          id,
+          type,
+          success: true,
+          data: {
+            success: true,
+            providerId: result.providerId,
+            path: result.path,
+            config: result.config,
+            requiresReload: true,
+            reloadDelayMs: deps.clientReloadDelayMs,
+          },
+        };
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        return { id, type, success: false, error: errorMessage };
+      }
+    }
+
     case 'api:quota:providers': {
       try {
         const providers = listConfiguredQuotaProviders();
@@ -498,7 +584,7 @@ export async function handleSystemBridgeMessage(
     case 'api:quota:credentials': {
       const { providerId, method, credential: input } = (payload || {}) as { providerId?: ManagedProvider; method?: string; credential?: unknown };
       try {
-        if (!providerId || !['opencode-go', 'ollama-cloud', 'cursor'].includes(providerId)) return { id, type, success: false, error: 'Unsupported credential provider' };
+        if (!providerId || !['exe-dev', 'ollama-cloud', 'cursor'].includes(providerId)) return { id, type, success: false, error: 'Unsupported credential provider' };
         if (method === 'GET') return { id, type, success: true, data: credentialStatus(providerId) };
         if (method === 'DELETE') { deleteCredential(providerId); return { id, type, success: true, data: { configured: false } }; }
         if (method === 'IMPORT') {
@@ -510,15 +596,13 @@ export async function handleSystemBridgeMessage(
         if (method === 'PUT') {
           const credential = normalizeCredential(providerId, input);
           if (!credential) return { id, type, success: false, error: 'Invalid credential' };
-          if (providerId === 'opencode-go') await fetchOpenCodeGoUsage(credential as { workspaceId: string; authCookie: string });
-          else await validateCredential(providerId, credential);
+          await validateCredential(providerId, credential);
           return { id, type, success: true, data: writeCredential(providerId, credential) };
         }
         if (method === 'VALIDATE') {
           const credential = readCredential(providerId);
           if (!credential) return { id, type, success: false, error: 'Not configured' };
-          if (providerId === 'opencode-go') await fetchOpenCodeGoUsage(credential as { workspaceId: string; authCookie: string });
-          else await validateCredential(providerId, credential);
+          await validateCredential(providerId, credential);
           return { id, type, success: true, data: { valid: true } };
         }
         return { id, type, success: false, error: 'Unsupported method' };
@@ -535,6 +619,41 @@ export async function handleSystemBridgeMessage(
       try {
         const result = await fetchQuotaForProvider(providerId);
         return { id, type, success: true, data: result };
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        return { id, type, success: false, error: errorMessage };
+      }
+    }
+
+    case 'api:workspace:addFolder': {
+      try {
+        // SAFETY: bridge payloads are untrusted JSON from the webview; the
+        // cast only reads the optional path field, and non-string values fail
+        // the emptiness check below (or throw inside the try, which the catch
+        // converts into a clean failure response).
+        const { path: targetPath } = (payload || {}) as { path?: string };
+        if (!targetPath || targetPath.trim().length === 0) {
+          return { id, type, success: false, error: 'Directory path is required' };
+        }
+        const folders = vscode.workspace.workspaceFolders ?? [];
+        const uri = vscode.Uri.file(normalizeWindowsDriveLetter(targetPath.trim()));
+        // `Uri.fsPath` lowercases the Windows drive letter again, so both sides
+        // have to go through the shared comparison (see pathUtils).
+        const alreadyAdded = folders.some(
+          (folder) => pathsEqualWithNormalizedDriveLetter(folder.uri.fsPath, uri.fsPath),
+        );
+        if (!alreadyAdded) {
+          const updated = await vscode.workspace.updateWorkspaceFolders(folders.length, null, { uri });
+          if (!updated) {
+            return { id, type, success: false, error: 'Failed to add workspace folder' };
+          }
+        }
+        return {
+          id,
+          type,
+          success: true,
+          data: { workspaceFolders: resolveWorkspaceFolders(vscode.workspace.workspaceFolders ?? []) },
+        };
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         return { id, type, success: false, error: errorMessage };

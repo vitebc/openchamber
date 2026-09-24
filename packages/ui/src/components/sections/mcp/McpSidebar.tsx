@@ -8,10 +8,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useMcpConfigStore, type McpDraft, type McpServerConfig } from '@/stores/useMcpConfigStore';
+import { selectMcpServersForDirectory, useMcpConfigStore, type McpDraft, type McpServerConfig } from '@/stores/useMcpConfigStore';
+import { MCP_DRAFT_OAUTH_UNSET } from './mcpDraft';
 import { useShallow } from 'zustand/react/shallow';
 import { useMcpStore } from '@/stores/useMcpStore';
-import { useDirectoryStore } from '@/stores/useDirectoryStore';
+import { useSettingsDirectory } from '@/hooks/useSettingsDirectory';
 import { isMobileDeviceViaCSS } from '@/lib/device';
 import { cn } from '@/lib/utils';
 import { toast } from '@/components/ui';
@@ -38,8 +39,7 @@ const statusToneFromMcp = (status: string | undefined): StatusTone => {
   switch (status) {
     case 'connected': return 'success';
     case 'failed': return 'error';
-    case 'needs_auth':
-    case 'needs_client_registration': return 'warning';
+    case 'needs_auth': return 'warning';
     default: return 'idle';
   }
 };
@@ -65,9 +65,8 @@ export const McpSidebar: React.FC<McpSidebarProps> = ({ onItemSelect }) => {
   const { t } = useI18n();
   const bgClass = 'bg-background';
 
-  const { mcpServers, selectedMcpName, setSelectedMcp, setMcpDraft, loadMcpConfigs, deleteMcp } =
+  const { selectedMcpName, setSelectedMcp, setMcpDraft, loadMcpConfigs, deleteMcp } =
     useMcpConfigStore(useShallow((s) => ({
-      mcpServers: s.mcpServers,
       selectedMcpName: s.selectedMcpName,
       setSelectedMcp: s.setSelectedMcp,
       setMcpDraft: s.setMcpDraft,
@@ -75,8 +74,11 @@ export const McpSidebar: React.FC<McpSidebarProps> = ({ onItemSelect }) => {
       deleteMcp: s.deleteMcp,
     })));
 
-  const currentDirectory = useDirectoryStore((state) => state.currentDirectory);
-  const mcpStatus = useMcpStore((state) => state.getStatusForDirectory(currentDirectory ?? null));
+  // Settings browses whichever project its own selector points at; the app
+  // stays where it is.
+  const settingsDirectory = useSettingsDirectory();
+  const mcpServers = useMcpConfigStore((state) => selectMcpServersForDirectory(state, settingsDirectory));
+  const mcpStatus = useMcpStore((state) => state.getStatusForDirectory(settingsDirectory));
   const refreshStatus = useMcpStore((state) => state.refresh);
   const getErrorForDirectory = useMcpStore((state) => state.getErrorForDirectory);
 
@@ -96,8 +98,8 @@ export const McpSidebar: React.FC<McpSidebarProps> = ({ onItemSelect }) => {
   );
 
   React.useEffect(() => {
-    void loadMcpConfigs();
-  }, [loadMcpConfigs]);
+    void loadMcpConfigs({ directory: settingsDirectory });
+  }, [loadMcpConfigs, settingsDirectory]);
 
   const handleRefresh = React.useCallback(() => {
     if (isRefreshingStatus) return;
@@ -106,17 +108,17 @@ export const McpSidebar: React.FC<McpSidebarProps> = ({ onItemSelect }) => {
     const minSpinPromise = new Promise((resolve) => setTimeout(resolve, 500));
 
     Promise.all([
-      refreshStatus({ directory: currentDirectory, silent: true }),
+      refreshStatus({ directory: settingsDirectory, silent: true }),
       minSpinPromise,
     ]).then(() => {
-      const error = getErrorForDirectory(currentDirectory);
+      const error = getErrorForDirectory(settingsDirectory);
       if (error) {
         toast.error(error);
       }
     }).finally(() => {
       setIsRefreshingStatus(false);
     });
-  }, [currentDirectory, getErrorForDirectory, isRefreshingStatus, refreshStatus]);
+  }, [getErrorForDirectory, isRefreshingStatus, refreshStatus, settingsDirectory]);
 
   const handleCreateNew = () => {
     const baseName = 'new-mcp-server';
@@ -135,13 +137,14 @@ export const McpSidebar: React.FC<McpSidebarProps> = ({ onItemSelect }) => {
       url: '',
       environment: [],
       headers: [],
-      oauthEnabled: true,
-      oauthClientId: '',
-      oauthClientSecret: '',
-      oauthScope: '',
-      oauthRedirectUri: '',
-      timeout: '',
-      enabled: true,
+      ...MCP_DRAFT_OAUTH_UNSET,
+      oauthAuthServerMetadataUrl: '',
+      protocol: 'legacy',
+      timeoutStartup: '',
+      timeoutCatalog: '',
+      timeoutExecution: '',
+      codemode: true,
+      disabled: false,
     };
     setMcpDraft(draft);
     setSelectedMcp(newName);
@@ -151,7 +154,7 @@ export const McpSidebar: React.FC<McpSidebarProps> = ({ onItemSelect }) => {
   const handleDelete = async () => {
     if (!deleteTarget) return;
     setIsDeleting(true);
-    const result = await deleteMcp(deleteTarget.name);
+    const result = await deleteMcp(deleteTarget.name, settingsDirectory);
     if (result.ok) {
       if (result.reloadFailed) {
         toast.warning(result.message || `MCP server "${deleteTarget.name}" deleted, but OpenCode reload failed`, {
@@ -187,7 +190,7 @@ export const McpSidebar: React.FC<McpSidebarProps> = ({ onItemSelect }) => {
           <h2 className={SETTINGS_PANEL_TITLE_CLASS}>{t('settings.mcp.sidebar.title')}</h2>
           <button
             type="button"
-            className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground hover:bg-interactive-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground hover:bg-interactive-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             disabled={isRefreshingStatus}
             onClick={handleRefresh}
             aria-label={t('settings.mcp.sidebar.actions.refreshStatusAria')}
@@ -230,7 +233,7 @@ export const McpSidebar: React.FC<McpSidebarProps> = ({ onItemSelect }) => {
                 </div>
                 {projectServers.map((server) => {
                   const runtimeStatus = mcpStatus[server.name];
-                  const tone = statusToneFromMcp(runtimeStatus?.status);
+                  const tone = statusToneFromMcp(runtimeStatus?.status.status);
                   const isSelected = selectedMcpName === server.name;
                   const isMobile = isMobileDeviceViaCSS();
 
@@ -243,10 +246,10 @@ export const McpSidebar: React.FC<McpSidebarProps> = ({ onItemSelect }) => {
                           setMcpDraft(null);
                           onItemSelect?.();
                         }}
-                        className="flex min-w-0 flex-1 flex-col gap-0 rounded-sm text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+                        className="flex min-w-0 flex-1 flex-col gap-0 rounded-sm text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
                         <div className="flex items-center gap-2">
-                          <StatusDot tone={tone} enabled={server.enabled} />
+                          <StatusDot tone={tone} enabled={server.disabled !== true} />
                           <span className="typography-ui-label font-normal truncate text-foreground">{server.name}</span>
                           <span title={server.type === 'local'
                             ? t('settings.mcp.sidebar.serverType.localTitle')
@@ -293,7 +296,7 @@ export const McpSidebar: React.FC<McpSidebarProps> = ({ onItemSelect }) => {
                 </div>
                 {userServers.map((server) => {
                   const runtimeStatus = mcpStatus[server.name];
-                  const tone = statusToneFromMcp(runtimeStatus?.status);
+                  const tone = statusToneFromMcp(runtimeStatus?.status.status);
                   const isSelected = selectedMcpName === server.name;
                   const isMobile = isMobileDeviceViaCSS();
 
@@ -306,10 +309,10 @@ export const McpSidebar: React.FC<McpSidebarProps> = ({ onItemSelect }) => {
                           setMcpDraft(null);
                           onItemSelect?.();
                         }}
-                        className="flex min-w-0 flex-1 flex-col gap-0 rounded-sm text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+                        className="flex min-w-0 flex-1 flex-col gap-0 rounded-sm text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
                         <div className="flex items-center gap-2">
-                          <StatusDot tone={tone} enabled={server.enabled} />
+                          <StatusDot tone={tone} enabled={server.disabled !== true} />
                           <span className="typography-ui-label font-normal truncate text-foreground">{server.name}</span>
                           <span title={server.type === 'local'
                             ? t('settings.mcp.sidebar.serverType.localTitle')

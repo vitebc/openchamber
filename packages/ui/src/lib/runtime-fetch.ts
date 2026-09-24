@@ -1,6 +1,7 @@
 import { getActiveRelayTunnel } from './relay/runtime-tunnel';
 import { TUNNEL_PARSE_BASE } from './relay/tunnel-payloads';
 import { buildRuntimeAuthHeaders } from './runtime-auth';
+import { observeRuntimeAuthResponse } from './runtime-auth-expiry';
 import { getRuntimeUrlResolver, type RuntimeUrlQuery } from './runtime-url';
 
 export interface RuntimeFetchOptions extends RequestInit {
@@ -29,6 +30,20 @@ const isCurrentWindowUrl = (url: URL): boolean => {
 };
 
 const isAbsoluteUrl = (value: string): boolean => /^[a-z][a-z\d+.-]*:\/\//i.test(value);
+
+const isNgrokHost = (hostname: string): boolean =>
+  /(^|\.)ngrok(?:-free)?\.(?:app|dev|io)$/i.test(hostname);
+
+export const addRuntimeProxyHeaders = (url: string, headers: Headers): Headers => {
+  try {
+    if (isNgrokHost(new URL(url).hostname) && !headers.has('ngrok-skip-browser-warning')) {
+      headers.set('ngrok-skip-browser-warning', 'openchamber');
+    }
+  } catch {
+    // Relative and non-HTTP runtime paths do not need proxy-specific headers.
+  }
+  return headers;
+};
 
 const appendRuntimeQuery = (url: URL, query?: RuntimeUrlQuery): void => {
   if (!query) return;
@@ -234,12 +249,15 @@ const resolveRuntimeFetchInput = (input: string | URL | Request, query?: Runtime
 const COALESCE_READ_PATH = /\/api\/(config|path|app\/agents|agent|project|command)(\b|\/|\?|$)/;
 const READ_COALESCE = new Map<string, Promise<Response>>();
 
-const coalesceReadKey = (method: string, url: string, hasSignal: boolean): string | null => {
+// OpenCode 2.x scopes these reads by the `x-opencode-directory` header, not
+// the URL, so two projects asking for `/api/config` at once must not share
+// one response.
+const coalesceReadKey = (method: string, url: string, hasSignal: boolean, headers: Headers): string | null => {
   if (hasSignal) return null;
   if (method !== 'GET') return null;
   if (url.includes('/event')) return null;
   if (!COALESCE_READ_PATH.test(url)) return null;
-  return `GET ${url}`;
+  return `GET ${url}\u0000${headers.get('x-opencode-directory') ?? ''}`;
 };
 
 export const runtimeFetch = async (input: string | URL | Request, init: RuntimeFetchOptions = {}): Promise<Response> => {
@@ -254,35 +272,48 @@ export const runtimeFetch = async (input: string | URL | Request, init: RuntimeF
   let doFetch: () => Promise<Response>;
   let url: string;
   let method: string;
+  let scopeHeaders: Headers;
   if (relay && relayPath !== null) {
     const inputHeaders = input instanceof Request ? input.headers : undefined;
     const headers = await mergeHeaders(inputHeaders, requestInit.headers, true);
     doFetch = input instanceof Request
       ? () => relay.fetch(input, { ...requestInit, headers })
       : () => relay.fetch(relayPath, { ...requestInit, headers });
+    scopeHeaders = headers;
     url = relayPath;
     method = String(requestInit.method ?? (input instanceof Request ? input.method : 'GET')).toUpperCase();
   } else {
     const resolvedInput = resolveRuntimeFetchInput(input, query);
     const inputHeaders = resolvedInput instanceof Request ? resolvedInput.headers : undefined;
     const headers = await mergeHeaders(inputHeaders, requestInit.headers, shouldAttachRuntimeAuth(resolvedInput));
-    doFetch = resolvedInput instanceof Request
-      ? () => fetch(new Request(resolvedInput, { ...requestInit, headers }))
-      : () => fetch(resolvedInput, { ...requestInit, headers });
-    url =
+    const resolvedUrl =
       resolvedInput instanceof Request ? resolvedInput.url
       : resolvedInput instanceof URL ? resolvedInput.toString()
       : String(resolvedInput);
+    addRuntimeProxyHeaders(resolvedUrl, headers);
+    doFetch = resolvedInput instanceof Request
+      ? () => fetch(new Request(resolvedInput, { ...requestInit, headers }))
+      : () => fetch(resolvedInput, { ...requestInit, headers });
+    scopeHeaders = headers;
+    url = resolvedUrl;
     method = String(
       requestInit.method ?? (resolvedInput instanceof Request ? resolvedInput.method : 'GET'),
     ).toUpperCase();
   }
 
+  // Session-expiry classification rides on responses that already flow
+  // through here; only the status is read, never the body.
+  const rawFetch = doFetch;
+  doFetch = () => rawFetch().then((response) => {
+    observeRuntimeAuthResponse(url, response.status);
+    return response;
+  });
+
   // A Request always carries a (possibly default) signal; treat any Request, or
   // an explicit init.signal, as "has signal" and skip coalescing for safety.
   const hasSignal = requestInit.signal != null || input instanceof Request;
 
-  const key = coalesceReadKey(method, url, hasSignal);
+  const key = coalesceReadKey(method, url, hasSignal, scopeHeaders);
   if (!key) return doFetch();
 
   const existing = READ_COALESCE.get(key);
@@ -313,6 +344,7 @@ export const installRuntimeFetchBridge = (): void => {
           const url = new URL(input);
           if (isActiveRuntimeServiceUrl(url)) {
             const headers = await mergeHeaders(undefined, init?.headers);
+            addRuntimeProxyHeaders(url.toString(), headers);
             return nativeFetch(input, { ...init, headers });
           }
         } catch {
@@ -321,7 +353,9 @@ export const installRuntimeFetchBridge = (): void => {
         return nativeFetch(input, init);
       }
       const headers = await mergeHeaders(undefined, init?.headers);
-      return nativeFetch(buildRuntimeFetchUrl(input), { ...init, headers });
+      const target = buildRuntimeFetchUrl(input);
+      addRuntimeProxyHeaders(target, headers);
+      return nativeFetch(target, { ...init, headers });
     }
 
     if (input instanceof URL) {
@@ -329,12 +363,15 @@ export const installRuntimeFetchBridge = (): void => {
       if (!shouldResolveFetchInput(raw)) {
         if (isActiveRuntimeServiceUrl(input)) {
           const headers = await mergeHeaders(undefined, init?.headers);
+          addRuntimeProxyHeaders(input.toString(), headers);
           return nativeFetch(input, { ...init, headers });
         }
         return nativeFetch(input, init);
       }
       const headers = await mergeHeaders(undefined, init?.headers);
-      return nativeFetch(buildRuntimeFetchUrl(raw), { ...init, headers });
+      const target = buildRuntimeFetchUrl(raw);
+      addRuntimeProxyHeaders(target, headers);
+      return nativeFetch(target, { ...init, headers });
     }
 
     if (input instanceof Request) {
@@ -343,6 +380,7 @@ export const installRuntimeFetchBridge = (): void => {
           const url = new URL(input.url);
           if (isActiveRuntimeServiceUrl(url)) {
             const headers = await mergeHeaders(input.headers, init?.headers);
+            addRuntimeProxyHeaders(url.toString(), headers);
             return nativeFetch(new Request(input, { ...init, headers }));
           }
         } catch {
@@ -352,6 +390,7 @@ export const installRuntimeFetchBridge = (): void => {
       }
       const headers = await mergeHeaders(input.headers, init?.headers);
       const target = buildRuntimeFetchUrl(input.url);
+      addRuntimeProxyHeaders(target, headers);
       const request = target === input.url ? input : new Request(target, input);
       return nativeFetch(new Request(request, { ...init, headers }));
     }
