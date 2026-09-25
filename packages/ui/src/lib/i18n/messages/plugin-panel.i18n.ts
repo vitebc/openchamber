@@ -517,6 +517,7 @@ export const pluginPanelI18n = {
     'chat.chatInput.toast.guestUnavailableHere': 'Bu eklenti burada kullanılamıyor. OpenChamber web veya masaüstünde açın.',
   },
   ru: {
+    'chat.workStatus.sections.extensionBadge': 'Расширение',
     'chat.chatInput.toast.guestHasNoPanel': 'Это расширение работает без панели.',
     'header.mainSurface.backToChat': 'Назад в чат',
     'sessions.sidebar.header.actions.extensionPages': 'Страницы расширений',
