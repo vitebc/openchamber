@@ -594,6 +594,7 @@ export const webSearchI18n = {
     'settings.webSearch.keys.fromEnv': 'Из {name}',
     'settings.webSearch.keys.envHint': 'OpenCode также читает ключ из {names}.',
     'settings.webSearch.keys.placeholder': 'API-ключ',
+    'settings.webSearch.keys.enterpriseMode': 'В режиме enterprise ключи поиска берутся из конфигурации OpenCode или переменных окружения. Сохранённый ключ при этом можно удалить.',
     'settings.webSearch.keys.inputAria': 'API-ключ {provider}',
     'settings.webSearch.keys.save': 'Сохранить',
     'settings.webSearch.toast.saveFailed': 'Не удалось сохранить выбор поиска.',
