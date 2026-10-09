@@ -2077,7 +2077,6 @@ export const settingsDict = {
   "settings.voice.page.tooltip.sttBrowser": "API de voz web (Chrome/Edge). Gratis, sin configuración.",
   "settings.voice.page.tooltip.sttServer": "Servidor compatible con Whisper de OpenAI. Mayor precisión, cualquier idioma.",
   "settings.voice.page.field.apiKey": "Clave de API",
-  "settings.voice.page.field.apiKeyOptional": "Opcional",
   "settings.voice.page.field.apiKeyHintUsingConfig": "Usando la clave de la configuración",
   "settings.voice.page.field.apiKeyHintRequired": "OpenAI TTS requiere una clave de API",
   "settings.voice.page.enterpriseMode": "En modo empresa, la lectura en voz alta se queda en esta máquina: usa una voz local o un servidor personalizado que se ejecute aquí.",

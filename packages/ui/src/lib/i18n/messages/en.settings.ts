@@ -2100,7 +2100,6 @@ export const settingsDict = {
   'settings.voice.page.tooltip.sttBrowser': 'Web Speech API (Chrome/Edge). Free, no setup.',
   'settings.voice.page.tooltip.sttServer': 'OpenAI-compatible Whisper server. Better accuracy, any language.',
   'settings.voice.page.field.apiKey': 'API Key',
-  'settings.voice.page.field.apiKeyOptional': 'Optional',
   'settings.voice.page.field.apiKeyHintUsingConfig': 'Using key from configuration',
   'settings.voice.page.field.apiKeyHintRequired': 'OpenAI TTS requires an API key',
   'settings.voice.page.enterpriseMode': 'In enterprise mode, read-aloud stays on this machine: use a local voice, or a custom server running here.',

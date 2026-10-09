@@ -2077,7 +2077,6 @@ export const settingsDict = {
   "settings.voice.page.tooltip.sttBrowser": "Web Speech API (Chrome/Edge). Безкоштовно, без налаштування.",
   "settings.voice.page.tooltip.sttServer": "OpenAI-сумісний Whisper сервер. Краща точність, будь-яка мова.",
   "settings.voice.page.field.apiKey": "API ключ",
-  "settings.voice.page.field.apiKeyOptional": "Додатково",
   "settings.voice.page.field.apiKeyHintUsingConfig": "Використання ключа з конфігурації",
   "settings.voice.page.field.apiKeyHintRequired": "OpenAI TTS вимагає ключа API",
   "settings.voice.page.enterpriseMode": "У режимі enterprise озвучення лишається на цьому комп’ютері: використовуй локальний голос або власний сервер, що працює тут.",

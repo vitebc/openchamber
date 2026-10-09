@@ -2351,7 +2351,6 @@ export const settingsDict = {
   'settings.view.unavailable.title': 'Niedostępne',
   'settings.voice.page.actions.preview': 'Podgląd',
   'settings.voice.page.field.apiKey': 'Klucz API',
-  'settings.voice.page.field.apiKeyOptional': 'Opcjonalne',
   'settings.voice.page.field.apiKeyHintProvide': 'Podaj swój klucz OpenAI',
   'settings.voice.page.field.apiKeySavedPlaceholder': 'Zapisany na serwerze',
   'settings.voice.page.field.apiKeyRemove': 'Usuń zapisany klucz',

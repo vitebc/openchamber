@@ -1999,7 +1999,6 @@ export const settingsDict = {
   'settings.voice.page.tooltip.sttBrowser': 'Web Speech API (Chrome/Edge). Ücretsiz, kurulum gerekmez.',
   'settings.voice.page.tooltip.sttServer': 'OpenAI uyumlu Whisper sunucusu. Daha iyi doğruluk, her dil.',
   'settings.voice.page.field.apiKey': 'API Anahtarı',
-  'settings.voice.page.field.apiKeyOptional': 'İsteğe bağlı',
   'settings.voice.page.field.apiKeyHintUsingConfig': 'Yapılandırmadaki anahtar kullanılıyor',
   'settings.voice.page.field.apiKeyHintRequired': 'OpenAI TTS bir API anahtarı gerektirir',
   'settings.voice.page.enterpriseMode': 'Kurumsal modda sesli okuma bu makinede kalır: yerel bir ses ya da burada çalışan özel bir sunucu kullanın.',

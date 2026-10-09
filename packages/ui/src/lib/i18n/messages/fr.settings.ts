@@ -1991,7 +1991,6 @@ export const settingsDict = {
   'settings.voice.page.tooltip.sttBrowser': 'Web Speech API (Chrome/Edge). Gratuit, aucune configuration.',
   'settings.voice.page.tooltip.sttServer': 'Serveur Whisper compatible OpenAI. Une meilleure précision, dans n’importe quelle langue.',
   'settings.voice.page.field.apiKey': 'Clé API',
-  'settings.voice.page.field.apiKeyOptional': 'Facultatif',
   'settings.voice.page.field.apiKeyHintUsingConfig': 'Utiliser la clé de la configuration',
   'settings.voice.page.field.apiKeyHintRequired': 'OpenAI TTS nécessite une clé API',
   'settings.voice.page.enterpriseMode': 'En mode entreprise, la lecture à voix haute reste sur cette machine : utilisez une voix locale ou un serveur personnalisé qui tourne ici.',

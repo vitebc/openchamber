@@ -178,6 +178,7 @@ export const mcpGridI18n = {
     'settings.mcp.grid.empty': 'MCP-серверов пока нет.',
     'settings.mcp.grid.status.disabled': 'Отключено',
     'settings.mcp.grid.status.pending': 'Подключение',
+    'settings.mcp.grid.status.blockedByPolicy': 'Заблокировано политикой',
     'settings.mcp.grid.scope.project': 'Проект',
     'settings.mcp.page.back': 'Все серверы',
   },
