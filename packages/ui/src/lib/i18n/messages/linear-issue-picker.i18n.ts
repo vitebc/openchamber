@@ -105,4 +105,11 @@ export const linearIssuePickerI18n = {
     'chat.workStatus.linkedIssues.openLinear': 'פתח את {identifier} ב-Linear',
     'session.newWorktree.actions.startFromLinearIssue': 'Issue מ-Linear',
   },
+  ru: {
+    'chat.chatInput.actions.linkLinearIssue': 'Привязать задачу Linear',
+    'chat.chatInput.linked.linearIssue.openInBrowserAria': 'Открыть задачу в Linear',
+    'chat.chatInput.linked.linearIssue.removeAria': 'Убрать привязанную задачу Linear',
+    'chat.workStatus.linkedIssues.openLinear': 'Открыть {identifier} в Linear',
+    'session.newWorktree.actions.startFromLinearIssue': 'Начать с Linear issue',
+  },
 } as const;
