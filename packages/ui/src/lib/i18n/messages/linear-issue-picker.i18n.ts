@@ -91,11 +91,18 @@ export const linearIssuePickerI18n = {
     'chat.workStatus.linkedIssues.openLinear': "{identifier} issue'unu Linear'da aç",
     'session.newWorktree.actions.startFromLinearIssue': "Linear Issue'dan başla",
   },
-  ru: {
-    'chat.chatInput.actions.linkLinearIssue': 'Привязать задачу Linear',
-    'chat.chatInput.linked.linearIssue.openInBrowserAria': 'Открыть задачу в Linear',
-    'chat.chatInput.linked.linearIssue.removeAria': 'Убрать привязанную задачу Linear',
-    'chat.workStatus.linkedIssues.openLinear': 'Открыть {identifier} в Linear',
-    'session.newWorktree.actions.startFromLinearIssue': 'Начать с Linear issue',
+  ar: {
+    'chat.chatInput.actions.linkLinearIssue': 'ربط مهمة Linear',
+    'chat.chatInput.linked.linearIssue.openInBrowserAria': 'فتح المهمة في Linear',
+    'chat.chatInput.linked.linearIssue.removeAria': 'إزالة مهمة Linear المرتبطة',
+    'chat.workStatus.linkedIssues.openLinear': 'فتح {identifier} في Linear',
+    'session.newWorktree.actions.startFromLinearIssue': 'مهمة Linear',
+  },
+  he: {
+    'chat.chatInput.actions.linkLinearIssue': 'קשר Issue מ-Linear',
+    'chat.chatInput.linked.linearIssue.openInBrowserAria': 'פתח את ה-Issue ב-Linear',
+    'chat.chatInput.linked.linearIssue.removeAria': 'הסר את ה-Issue המקושר מ-Linear',
+    'chat.workStatus.linkedIssues.openLinear': 'פתח את {identifier} ב-Linear',
+    'session.newWorktree.actions.startFromLinearIssue': 'Issue מ-Linear',
   },
 } as const;

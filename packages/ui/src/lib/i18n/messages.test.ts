@@ -14,6 +14,8 @@ import { dict as ukDict } from './messages/uk';
 import { dict as zhCnDict } from './messages/zh-CN';
 import { dict as zhTwDict } from './messages/zh-TW';
 import { dict as trDict } from './messages/tr';
+import { dict as arDict } from './messages/ar';
+import { dict as heDict } from './messages/he';
 
 const localeDictionaries = {
   en: enDict,
@@ -30,9 +32,16 @@ const localeDictionaries = {
   'zh-CN': zhCnDict,
   'zh-TW': zhTwDict,
   tr: trDict,
+  ar: arDict,
+  he: heDict,
 } as const;
 
 describe('i18n dictionaries', () => {
+  test('repository links name either provider in every locale', () => {
+    for (const dictionary of Object.values(localeDictionaries)) {
+      expect(dictionary['gitView.header.openRepository']).toContain('{provider}');
+    }
+  });
   test('anonymous transport has a translated read-only label in every locale', () => {
     const key = 'settings.sourceControl.transport.anonymous';
     expect(enDict[key]).toBe('Anonymous HTTPS, read-only');
@@ -68,6 +77,8 @@ describe('i18n dictionaries', () => {
       expect(dictionary['common.language.dutch']).toBeTruthy();
       expect(dictionary['common.language.french']).toBeTruthy();
       expect(dictionary['common.language.japanese']).toBeTruthy();
+      expect(dictionary['common.language.arabic']).toBeTruthy();
+      expect(dictionary['common.language.hebrew']).toBeTruthy();
     }
   });
 
