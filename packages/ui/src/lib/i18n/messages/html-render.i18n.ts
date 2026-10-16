@@ -135,4 +135,13 @@ export const htmlRenderI18n = {
     'settings.openchamber.tools.field.agentRenderToolSummary': 'אפשר לסוכנים להציג תרשימים, טבלאות ודיאגרמות ישירות בצ\'אט.',
     'settings.openchamber.tools.field.agentRenderToolInfo': 'הדפים רצים בסביבה מבודדת ללא גישה לסשנים או לקבצים שלך. קישורים נפתחים בדפדפן.',
   },
+  ru: {
+    'chat.htmlRender.fullscreen': 'Открыть на весь экран',
+    'chat.htmlRender.download': 'Скачать как HTML',
+    'chat.htmlRender.downloadFailed': 'Не удалось сохранить страницу.',
+    'settings.openchamber.tools.field.agentRenderTool': 'Инструмент отображения для агентов',
+    'settings.openchamber.tools.field.agentRenderToolAria': 'Инструмент отображения для агентов',
+    'settings.openchamber.tools.field.agentRenderToolSummary': 'Разрешить агентам показывать графики, таблицы и диаграммы прямо в чате.',
+    'settings.openchamber.tools.field.agentRenderToolInfo': 'Страницы работают в песочнице без доступа к вашим сессиям и файлам. Ссылки открываются в вашем браузере.',
+  },
 } as const;

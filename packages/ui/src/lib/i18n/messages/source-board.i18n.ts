@@ -1246,6 +1246,12 @@ export const sourceBoardI18n = {
     'sourceBoard.list.toggleAria': 'רשימת פריטים, מוצג {item}',
   },
   ru: {
+    'sourceBoard.reply.startThread': 'Начать тред',
+    'sourceBoard.reply.startThreadHint': 'Опубликовать как тред, который кто-то должен решить',
+    'sourceBoard.reply.toast.threadStarted': 'Тред в {reference} начат',
+    'sourceBoard.thread.toast.replyFailed': 'Не удалось ответить в {reference}',
+    'sourceBoard.thread.toast.resolveFailed': 'Не удалось решить тред в {reference}',
+    'sourceBoard.thread.toast.unresolveFailed': 'Не удалось вернуть тред в {reference} в работу',
     'sourceBoard.title': 'Issues и PR',
     'sourceBoard.project.label': 'Проект',
     'sourceBoard.team.label': 'Команда Linear',
