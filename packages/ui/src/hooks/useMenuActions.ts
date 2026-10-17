@@ -102,7 +102,6 @@ export const useMenuActions = (
   const setSettingsDialogOpen = useUIStore((s) => s.setSettingsDialogOpen);
   const setAboutDialogOpen = useUIStore((s) => s.setAboutDialogOpen);
   const checkForUpdates = useUpdateStore((state) => state.checkForUpdates);
-  const { t } = useI18n();
   const { setThemeMode } = useThemeSystem();
   const checkUpdatesInFlightRef = React.useRef(false);
 
