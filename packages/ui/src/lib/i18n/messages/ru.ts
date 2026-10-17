@@ -152,7 +152,7 @@ export const dict: Record<I18nKey, string> = {
   ...providersI18n.ru,
   ...mcpGridI18n.ru,
   ...pluginsGridI18n.ru,
-  ...integrationsCatalogI18n['en'],
+  ...integrationsCatalogI18n.ru,
   'terminalView.actions.attachSelection': 'Прикрепить выбранный вывод',
   'terminalView.actions.copySelection': 'Скопировать выделенный вывод',
   'terminalView.toast.selectionCopied': 'Вывод скопирован',
