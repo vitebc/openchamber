@@ -12,6 +12,7 @@ import { useI18n } from '@/lib/i18n';
 import { sessionEvents } from '@/lib/sessionEvents';
 import { createWorktreeSession } from '@/lib/worktreeSessionCreator';
 import { showOpenCodeStatus } from '@/lib/openCodeStatus';
+import { useI18n } from '@/lib/i18n';
 import { addSelectionToChat } from '@/lib/addSelectionToChat';
 import { navigateSessionHistory } from '@/lib/sessionNavigationHistory';
 
@@ -60,13 +61,6 @@ const copyCurrentSelectionFallback = async (): Promise<boolean> => {
 const MENU_ACTION_EVENT = 'openchamber:menu-action';
 const CHECK_FOR_UPDATES_EVENT = 'openchamber:check-for-updates';
 
-type DesktopBridgeGlobal = {
-  listen?: (
-    event: string,
-    handler: (evt: { payload?: unknown }) => void
-  ) => Promise<() => void>;
-};
-
 type MenuAction =
   | 'about'
   | 'settings'
@@ -99,6 +93,7 @@ type MenuAction =
 export const useMenuActions = (
   onToggleMemoryDebug?: () => void
 ) => {
+  const { t } = useI18n();
   const openNewSessionDraft = useSessionUIStore((s) => s.openNewSessionDraft);
   const toggleCommandPalette = useUIStore((s) => s.toggleCommandPalette);
   const setCommandPaletteOpen = useUIStore((s) => s.setCommandPaletteOpen);
@@ -376,53 +371,4 @@ export const useMenuActions = (
     };
   }, [handleAction, handleCheckForUpdates]);
 
-  React.useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const desktop = (window as unknown as { __OPENCHAMBER_DESKTOP__?: DesktopBridgeGlobal }).__OPENCHAMBER_DESKTOP__;
-    const listen = desktop?.listen;
-    if (typeof listen !== 'function') return;
-
-    let unlistenMenu: null | (() => void | Promise<void>) = null;
-    let unlistenUpdate: null | (() => void | Promise<void>) = null;
-
-    listen('openchamber:menu-action', (evt) => {
-      const action = evt?.payload;
-      if (typeof action !== 'string') return;
-      handleAction(action as MenuAction);
-    })
-      .then((fn) => {
-        unlistenMenu = fn;
-      })
-      .catch(() => {
-        // ignore
-      });
-
-    listen('openchamber:check-for-updates', () => {
-      window.dispatchEvent(new Event(CHECK_FOR_UPDATES_EVENT));
-    })
-      .then((fn) => {
-        unlistenUpdate = fn;
-      })
-      .catch(() => {
-        // ignore
-      });
-
-    return () => {
-      const cleanup = async () => {
-        try {
-          const a = unlistenMenu?.();
-          if (a instanceof Promise) await a;
-        } catch {
-          // ignore
-        }
-        try {
-          const b = unlistenUpdate?.();
-          if (b instanceof Promise) await b;
-        } catch {
-          // ignore
-        }
-      };
-      void cleanup();
-    };
-  }, [handleAction]);
 };
