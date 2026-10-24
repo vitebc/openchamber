@@ -243,6 +243,8 @@ export const htmlRenderI18n = {
   ru: {
     'chat.htmlRender.fullscreen': 'Открыть на весь экран',
     'chat.htmlRender.download': 'Скачать как HTML',
+    'chat.htmlRender.annotate.intro': 'Это аннотированный фрагмент страницы, которую вы показали в чате.',
+    'chat.htmlRender.untitled': 'Страница',
     'chat.htmlRender.downloadFailed': 'Не удалось сохранить страницу.',
     'chat.htmlRender.waiting': 'Ожидается ваш ответ на странице',
     'chat.htmlRender.answered': 'Ответ: {summary}',

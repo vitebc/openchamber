@@ -120,4 +120,12 @@ export const sessionNoticesI18n = {
     'chat.sessionNotice.showDetails': '顯示代理收到的內容',
     'chat.sessionNotice.hideDetails': '隱藏代理收到的內容',
   },
+  ru: {
+    'chat.sessionNotice.restart': 'Продолжение после перезапуска',
+    'chat.sessionNotice.commandFailed': 'Не удалось запустить команду: {command}',
+    'chat.sessionNotice.moved': 'Перемещено в {folder}',
+    'chat.sessionNotice.movedUnknown': 'Перемещено в другую папку',
+    'chat.sessionNotice.showDetails': 'Показать, что получил агент',
+    'chat.sessionNotice.hideDetails': 'Скрыть, что получил агент',
+  },
 } as const;

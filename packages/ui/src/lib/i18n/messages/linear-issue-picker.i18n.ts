@@ -106,10 +106,10 @@ export const linearIssuePickerI18n = {
     'session.newWorktree.actions.startFromTrackerItem': 'Issue מ-{provider}',
   },
   ru: {
-    'chat.chatInput.actions.linkLinearIssue': 'Привязать задачу Linear',
-    'chat.chatInput.linked.linearIssue.openInBrowserAria': 'Открыть задачу в Linear',
-    'chat.chatInput.linked.linearIssue.removeAria': 'Убрать привязанную задачу Linear',
-    'chat.workStatus.linkedIssues.openLinear': 'Открыть {identifier} в Linear',
-    'session.newWorktree.actions.startFromLinearIssue': 'Начать с Linear issue',
+    'chat.chatInput.actions.linkTrackerItem': 'Привязать задачу {provider}',
+    'chat.chatInput.linked.trackerItem.openInBrowserAria': 'Открыть задачу в {provider}',
+    'chat.chatInput.linked.trackerItem.removeAria': 'Убрать связанную задачу {provider}',
+    'chat.workStatus.linkedIssues.openTrackerItem': 'Открыть {identifier} в {provider}',
+    'session.newWorktree.actions.startFromTrackerItem': 'Задача {provider}',
   },
 } as const;

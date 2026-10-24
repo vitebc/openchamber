@@ -105,4 +105,11 @@ export const fileEditorAidsI18n = {
     'filesView.editor.importNotFound': 'לא נמצא קובץ עבור {path}',
     'filesView.editor.importLookupFailed': 'לא ניתן לחפש את {path}',
   },
+  ru: {
+    'filesView.editor.gitHunk.revert': 'Отменить',
+    'filesView.editor.gitHunk.close': 'Закрыть',
+    'filesView.editor.jsonSyntaxError': 'Здесь разбор JSON прерывается',
+    'filesView.editor.importNotFound': 'Файл для {path} не найден',
+    'filesView.editor.importLookupFailed': 'Не удалось найти {path}',
+  },
 } as const;
