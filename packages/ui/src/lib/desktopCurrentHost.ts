@@ -36,8 +36,12 @@ export const getLocalDesktopOrigin = (): string => {
  * its local server listens. Without a local server, an entry for it would
  * point at nothing.
  */
-export const withLocalDesktopHost = (hosts: DesktopHost[], localOrigin: string | null | undefined): DesktopHost[] => (
-  localOrigin ? [{ id: LOCAL_HOST_ID, label: 'Local', url: localOrigin }, ...hosts] : hosts
+export const withLocalDesktopHost = (
+  hosts: DesktopHost[],
+  localOrigin: string | null | undefined,
+  localLabel = 'Local',
+): DesktopHost[] => (
+  localOrigin ? [{ id: LOCAL_HOST_ID, label: localLabel, url: localOrigin }, ...hosts] : hosts
 );
 
 export const runtimeKeyForDesktopHost = (host: DesktopHost): string => {
@@ -51,7 +55,11 @@ type ResolvedDesktopHost = {
   url: string;
 };
 
-export const resolveCurrentDesktopHost = (hosts: DesktopHost[]): ResolvedDesktopHost => {
+export const resolveCurrentDesktopHost = (
+  hosts: DesktopHost[],
+  localLabel = 'Local',
+  fallbackLabel = 'Instance',
+): ResolvedDesktopHost => {
   const currentHref = typeof window === 'undefined' ? '' : window.location.href;
   const localOrigin = hosts.find((host) => host.id === LOCAL_HOST_ID)?.url || getLocalDesktopOrigin();
   const runtimeApiBaseUrl = getRuntimeApiBaseUrl();
@@ -68,7 +76,7 @@ export const resolveCurrentDesktopHost = (hosts: DesktopHost[]): ResolvedDesktop
   }
 
   if (runtimeApiBaseUrl && locationMatchesHost(runtimeApiBaseUrl, localOrigin)) {
-    return { id: LOCAL_HOST_ID, label: 'Local', url: normalizedLocal };
+    return { id: LOCAL_HOST_ID, label: localLabel, url: normalizedLocal };
   }
 
   const runtimeMatch = hosts.find((host) => (
@@ -84,7 +92,7 @@ export const resolveCurrentDesktopHost = (hosts: DesktopHost[]): ResolvedDesktop
   }
 
   if (currentHref && locationMatchesHost(currentHref, localOrigin)) {
-    return { id: LOCAL_HOST_ID, label: 'Local', url: normalizedLocal };
+    return { id: LOCAL_HOST_ID, label: localLabel, url: normalizedLocal };
   }
 
   const match = hosts.find((host) => (currentHref ? locationMatchesHost(currentHref, host.url) : false));
@@ -98,7 +106,7 @@ export const resolveCurrentDesktopHost = (hosts: DesktopHost[]): ResolvedDesktop
   // Without a local server (OPENCHAMBER_SKIP_LOCAL_SERVER=1) that address is
   // all there is, and calling it Local named an entry the list does not have.
   if (packagedPage && localOrigin && !runtimeApiBaseUrl) {
-    return { id: LOCAL_HOST_ID, label: 'Local', url: normalizedLocal };
+    return { id: LOCAL_HOST_ID, label: localLabel, url: normalizedLocal };
   }
 
   // Nothing configured matches. Naming the address is still more use than the
@@ -109,7 +117,7 @@ export const resolveCurrentDesktopHost = (hosts: DesktopHost[]): ResolvedDesktop
     : packagedPage ? '' : normalizedCurrent;
   return {
     id: 'custom',
-    label: redactSensitiveUrl(address || 'Instance'),
+    label: redactSensitiveUrl(address || fallbackLabel),
     url: address,
   };
 };

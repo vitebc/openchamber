@@ -1,7 +1,7 @@
 import { settingsLayoutI18n } from './settings-layout.i18n';
 import { extensionsSettingsI18n } from './extensions.settings.i18n';
 import { guestIntegrationsI18n } from './guest-integrations.i18n';
-import { linearIntegrationI18n } from './linear-integration.i18n';
+import { firstPartyIntegrationsI18n } from './first-party-integrations.i18n';
 import { thirdPartyIntegrationI18n } from './third-party-integrations.i18n';
 import { extensionCatalogI18n } from './extension-catalog.i18n';
 export const settingsDict = {
@@ -2515,7 +2515,7 @@ export const settingsDict = {
   'settings.openchamber.visual.field.inputHistoryLimitDescription': 'Уменьшение этого числа удаляет старые промпты из вашей истории.',
   'settings.openchamber.visual.field.inputHistoryLimitAria': 'Сколько промптов помнить',
   'settings.openchamber.visual.field.inputHistoryLimitUnit': 'промптов',
-  ...linearIntegrationI18n.ru,
+  ...firstPartyIntegrationsI18n.ru,
   ...thirdPartyIntegrationI18n.ru,
   ...extensionCatalogI18n.ru,
   ...guestIntegrationsI18n.ru,

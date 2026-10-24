@@ -44,7 +44,7 @@ function DesktopInstanceMenuContent({ className }: Props): React.ReactNode {
   const { t } = useI18n();
   const shortcutOverrides = useUIStore((state) => state.shortcutOverrides);
   const [open, setOpen] = React.useState(false);
-  const [currentInstanceLabel, setCurrentInstanceLabel] = React.useState('Local');
+  const [currentInstanceLabel, setCurrentInstanceLabel] = React.useState(() => t('desktopHostSwitcher.instance.local'));
   const [currentInstanceIsLocal, setCurrentInstanceIsLocal] = React.useState(true);
   const [remoteUpdateDialogOpen, setRemoteUpdateDialogOpen] = React.useState(false);
   const [remoteUpdateInfo, setRemoteUpdateInfo] = React.useState<UpdateInfo | null>(null);
@@ -53,7 +53,7 @@ function DesktopInstanceMenuContent({ className }: Props): React.ReactNode {
 
   const refreshCurrentInstanceLabel = React.useCallback(async () => {
     if (isDesktopLocalOriginActive()) {
-      setCurrentInstanceLabel('Local');
+      setCurrentInstanceLabel(t('desktopHostSwitcher.instance.local'));
       setCurrentInstanceIsLocal(true);
       return;
     }
@@ -62,19 +62,23 @@ function DesktopInstanceMenuContent({ className }: Props): React.ReactNode {
     // the panel it opens can never disagree about which instance this is.
     // Without the saved instances the window's own runtime still names it.
     const hosts = await desktopHostsGet()
-      .then((cfg) => withLocalDesktopHost(cfg.hosts, cfg.localOrigin))
-      .catch(() => withLocalDesktopHost([], getLocalDesktopOrigin()));
-    const resolved = resolveCurrentDesktopHost(hosts);
+      .then((cfg) => withLocalDesktopHost(cfg.hosts, cfg.localOrigin, t('desktopHostSwitcher.instance.local')))
+      .catch(() => withLocalDesktopHost([], getLocalDesktopOrigin(), t('desktopHostSwitcher.instance.local')));
+    const resolved = resolveCurrentDesktopHost(
+      hosts,
+      t('desktopHostSwitcher.instance.local'),
+      t('desktopHostSwitcher.instance.fallback'),
+    );
 
     if (resolved.id === LOCAL_HOST_ID) {
-      setCurrentInstanceLabel('Local');
+      setCurrentInstanceLabel(t('desktopHostSwitcher.instance.local'));
       setCurrentInstanceIsLocal(true);
       return;
     }
 
     setCurrentInstanceIsLocal(false);
-    setCurrentInstanceLabel(redactSensitiveUrl(resolved.label.trim() || 'Instance'));
-  }, []);
+    setCurrentInstanceLabel(redactSensitiveUrl(resolved.label.trim() || t('desktopHostSwitcher.instance.fallback')));
+  }, [t]);
 
   React.useEffect(() => {
     void refreshCurrentInstanceLabel();

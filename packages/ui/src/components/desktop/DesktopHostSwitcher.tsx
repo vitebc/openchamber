@@ -302,8 +302,8 @@ export function DesktopHostSwitcherDialog({
       ...h,
       url: normalizeHostUrl(h.url) || h.url,
     }));
-    return withLocalDesktopHost(normalizedRemote, localOrigin);
-  }, [configHosts, localOrigin]);
+    return withLocalDesktopHost(normalizedRemote, localOrigin, t('desktopHostSwitcher.instance.local'));
+  }, [configHosts, localOrigin, t]);
 
   React.useEffect(() => {
     return subscribeRuntimeEndpointChanged(() => setRuntimeEndpointEpoch((epoch) => epoch + 1));
@@ -311,8 +311,12 @@ export function DesktopHostSwitcherDialog({
 
   const current = React.useMemo(() => {
     void runtimeEndpointEpoch;
-    return resolveCurrentDesktopHost(allHosts);
-  }, [allHosts, runtimeEndpointEpoch]);
+    return resolveCurrentDesktopHost(
+      allHosts,
+      t('desktopHostSwitcher.instance.local'),
+      t('desktopHostSwitcher.instance.fallback'),
+    );
+  }, [allHosts, runtimeEndpointEpoch, t]);
   // Null when the default is not in the list, such as Local without a local
   // server: naming it would point at an entry nobody can pick.
   const currentDefaultLabel = React.useMemo(() => {
