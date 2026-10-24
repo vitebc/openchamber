@@ -12,6 +12,7 @@ import { useKeybinds } from '@/hooks/useKeybind';
 import { isDesktopLocalOriginActive, isDesktopShell, type UpdateInfo } from '@/lib/desktop';
 import { desktopHostsGet, redactSensitiveUrl } from '@/lib/desktopHosts';
 import {
+  getLocalDesktopOrigin,
   LOCAL_HOST_ID,
   resolveCurrentDesktopHost,
   withLocalDesktopHost,
@@ -43,7 +44,7 @@ function DesktopInstanceMenuContent({ className }: Props): React.ReactNode {
   const { t } = useI18n();
   const shortcutOverrides = useUIStore((state) => state.shortcutOverrides);
   const [open, setOpen] = React.useState(false);
-  const [currentInstanceLabel, setCurrentInstanceLabel] = React.useState(() => t('desktopHostSwitcher.instance.local'));
+  const [currentInstanceLabel, setCurrentInstanceLabel] = React.useState('Local');
   const [currentInstanceIsLocal, setCurrentInstanceIsLocal] = React.useState(true);
   const [remoteUpdateDialogOpen, setRemoteUpdateDialogOpen] = React.useState(false);
   const [remoteUpdateInfo, setRemoteUpdateInfo] = React.useState<UpdateInfo | null>(null);
@@ -51,35 +52,29 @@ function DesktopInstanceMenuContent({ className }: Props): React.ReactNode {
   const [remoteUpdateError, setRemoteUpdateError] = React.useState<string | null>(null);
 
   const refreshCurrentInstanceLabel = React.useCallback(async () => {
-    try {
-      if (isDesktopLocalOriginActive()) {
-        setCurrentInstanceLabel(t('desktopHostSwitcher.instance.local'));
-        setCurrentInstanceIsLocal(true);
-        return;
-      }
-      setCurrentInstanceIsLocal(false);
-
-      // Same resolution the host switcher's own header uses, so the button and
-      // the panel it opens can never disagree about which instance this is.
-      const cfg = await desktopHostsGet();
-      const resolved = resolveCurrentDesktopHost(
-        withLocalDesktopHost(cfg.hosts, cfg.localOrigin, t('desktopHostSwitcher.instance.local')),
-        t('desktopHostSwitcher.instance.local'),
-        t('desktopHostSwitcher.instance.fallback'),
-      );
-
-      if (resolved.id === LOCAL_HOST_ID) {
-        setCurrentInstanceLabel(t('desktopHostSwitcher.instance.local'));
-        setCurrentInstanceIsLocal(true);
-        return;
-      }
-
-      setCurrentInstanceLabel(redactSensitiveUrl(resolved.label.trim() || t('desktopHostSwitcher.instance.fallback')));
-    } catch {
-      setCurrentInstanceLabel(t('desktopHostSwitcher.instance.local'));
+    if (isDesktopLocalOriginActive()) {
+      setCurrentInstanceLabel('Local');
       setCurrentInstanceIsLocal(true);
+      return;
     }
-  }, [t]);
+
+    // Same resolution the host switcher's own header uses, so the button and
+    // the panel it opens can never disagree about which instance this is.
+    // Without the saved instances the window's own runtime still names it.
+    const hosts = await desktopHostsGet()
+      .then((cfg) => withLocalDesktopHost(cfg.hosts, cfg.localOrigin))
+      .catch(() => withLocalDesktopHost([], getLocalDesktopOrigin()));
+    const resolved = resolveCurrentDesktopHost(hosts);
+
+    if (resolved.id === LOCAL_HOST_ID) {
+      setCurrentInstanceLabel('Local');
+      setCurrentInstanceIsLocal(true);
+      return;
+    }
+
+    setCurrentInstanceIsLocal(false);
+    setCurrentInstanceLabel(redactSensitiveUrl(resolved.label.trim() || 'Instance'));
+  }, []);
 
   React.useEffect(() => {
     void refreshCurrentInstanceLabel();

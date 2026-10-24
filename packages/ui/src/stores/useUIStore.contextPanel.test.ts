@@ -53,6 +53,18 @@ describe('useUIStore preview file tabs', () => {
     expect(fileTabs()[2].id).toBe('file:/repo/lib/src/deep/c.ts');
   });
 
+  test('a draft waiting for a space moves its tabs in its own panel and the editor\'s files under the space', () => {
+    const space = '/spaces/a1b2c3d4e5f6/repo';
+    const store = useUIStore.getState();
+    store.openContextFile('/repo', `${space}/src/a.ts`);
+    useFilesViewTabsStore.getState().addOpenPath(space, `${space}/src/a.ts`);
+
+    store.moveContextFilePaths('/repo', `${space}/src/a.ts`, `${space}/lib/a.ts`, space);
+
+    expect(fileTabs().map((tab) => tab.targetPath)).toEqual([`${space}/lib/a.ts`]);
+    expect(useFilesViewTabsStore.getState().byRoot[space]?.openPaths).toEqual([`${space}/lib/a.ts`]);
+  });
+
   test('a moved tab replaces a stale tab already open at its destination', () => {
     const store = useUIStore.getState();
     store.openContextFile('/repo', '/repo/lib/a.ts');
@@ -651,12 +663,22 @@ describe('useUIStore openContextSurface', () => {
     expect(activeTab?.targetPath).toBe('/repo/b.ts');
   });
 
-  test('reopening the file surface reveals the file tree when it was left hidden', () => {
+  test('reopening the file surface with no file open reveals the hidden file tree', () => {
     useUIStore.setState({ contextEditorTreeVisible: false });
 
     useUIStore.getState().openContextSurface(directory, 'file');
 
     expect(useUIStore.getState().contextEditorTreeVisible).toBe(true);
+  });
+
+  test('reopening the file surface with a file open keeps the file tree hidden', () => {
+    useUIStore.getState().openContextFile(directory, '/repo/a.ts');
+    useUIStore.getState().openContextPanelTab(directory, { mode: 'diff' });
+    useUIStore.setState({ contextEditorTreeVisible: false });
+
+    useUIStore.getState().openContextSurface(directory, 'file');
+
+    expect(useUIStore.getState().contextEditorTreeVisible).toBe(false);
   });
 
   test('opening the terminal surface clears a stale target on the singleton tab', () => {

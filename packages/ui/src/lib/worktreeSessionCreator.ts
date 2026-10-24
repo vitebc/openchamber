@@ -5,18 +5,20 @@
  */
 
 import { toast } from '@/components/ui';
-import { formatMessage, useI18nStore, type I18nKey, type I18nParams } from '@/lib/i18n';
-import { useSessionUIStore } from '@/sync/session-ui-store';
+import { useSessionUIStore, type NewSessionDraftState } from '@/sync/session-ui-store';
 import { useProjectsStore } from '@/stores/useProjectsStore';
 import { useConfigStore } from '@/stores/useConfigStore';
 import { useContextStore } from '@/stores/contextStore';
 import { useDirectoryStore } from '@/stores/useDirectoryStore';
-import { checkIsGitRepository } from '@/lib/gitApi';
+import { checkIsGitRepository, resolveGitPrimaryRoot, resolveGitRepositoryPrefix } from '@/lib/gitApi';
 import { generateBranchName } from '@/lib/git/branchNameGenerator';
 import { parseModelIdentifier } from '@/lib/modelIdentifier';
 import { getRootBranch } from '@/lib/worktrees/worktreeStatus';
 import { getWorktreeSetupWaitEnabled } from '@/lib/openchamberConfig';
-import { resolveWorktreeSetupCommands } from '@/lib/sharedTrustConfirmation';
+import {
+  resolveWorktreeSetupCommands,
+  resolveWorktreeSetupCommandsOrCancel,
+} from '@/lib/sharedTrustConfirmation';
 import {
   removeProjectWorktree,
   type ProjectRef,
@@ -26,13 +28,13 @@ import {
   createPendingDraftWorktreeRequest,
   rejectPendingDraftWorktreeRequest,
   resolvePendingDraftWorktreeRequest,
+  waitForPendingDraftWorktreeRequest,
 } from '@/lib/worktrees/pendingDraftWorktree';
 import { waitForWorktreeBootstrap } from '@/lib/worktrees/worktreeBootstrap';
+import { resolveCreatedWorktreeStartDirectory } from '@/lib/worktrees/worktreeStartDirectory';
+import { projectPathForCheckoutFolder } from '@/lib/worktrees/worktreePaths';
 import { normalizePath } from '@/lib/pathNormalization';
 import { resolveProjectForDirectory } from '@/lib/projectResolution';
-
-const translateToast = (key: I18nKey, params?: I18nParams): string =>
-  formatMessage(useI18nStore.getState().dictionary, key, params);
 
 const waitForWorktreeBootstrapIfEnabled = async (project: ProjectRef, directory: string): Promise<void> => {
   if (await getWorktreeSetupWaitEnabled(project)) {
@@ -70,12 +72,36 @@ export const resolveProjectRef = (directory: string): ProjectRef | null => {
   return project ? { id: project.id, path: project.path } : null;
 };
 
+/**
+ * The project whose folder a session in `directory` works in, for placing it
+ * in another worktree. `resolveProjectRef` answers the project that owns the
+ * worktree list, which is the repository root when both `repo` and `repo/ai`
+ * are registered; the folder comes from where the session sits in its checkout
+ * (`projectPathForCheckoutFolder`), as the server does. Falls back to
+ * `resolveProjectRef` when git cannot answer.
+ */
+export const resolveFolderProjectRef = async (directory: string): Promise<ProjectRef | null> => {
+  const owner = resolveProjectRef(directory);
+  const located = await Promise.all([resolveGitRepositoryPrefix(directory), resolveGitPrimaryRoot(directory)])
+    .then(([folder, primaryRoot]) => ({ folder, primaryRoot }), () => null);
+  if (!located) return owner;
+  const projects = useProjectsStore.getState().projects;
+  const projectPath = projectPathForCheckoutFolder({ directory, ...located, projectPaths: projects.map((entry) => entry.path) });
+  const project = projectPath ? projects.find((entry) => normalizePath(entry.path) === projectPath) : undefined;
+  return project ? { id: project.id, path: project.path } : owner;
+};
+
 export const createQuickWorktree = async (
   project: ProjectRef,
-  options: { preferredName?: string; startRef?: string } = {},
+  options: { preferredName?: string; startRef?: string; cancelOnTrustDismiss?: boolean } = {},
 ) => {
   const preferredName = options.preferredName ?? generateBranchName();
-  const setupCommands = await resolveWorktreeSetupCommands(project);
+  const setupCommands = options.cancelOnTrustDismiss
+    ? await resolveWorktreeSetupCommandsOrCancel(project)
+    : await resolveWorktreeSetupCommands(project);
+  if (setupCommands === null) {
+    return null;
+  }
   return createWorktreeWithDefaults(project, {
     preferredName,
     mode: 'new',
@@ -158,7 +184,8 @@ const applyDefaultAgentAndModelSelection = (sessionId: string, configState = use
   }
 };
 
-const initializeSessionForWorktree = (sessionId: string, metadata: {
+/** `startDirectory` is where the session runs inside `metadata.path`; the worktree root stays the checkout. */
+const initializeSessionForWorktree = (sessionId: string, startDirectory: string, metadata: {
   path: string;
   projectDirectory: string;
   branch: string;
@@ -170,12 +197,38 @@ const initializeSessionForWorktree = (sessionId: string, metadata: {
   const sessionStore = useSessionUIStore.getState();
   const configState = useConfigStore.getState();
   sessionStore.initializeNewOpenChamberSession(sessionId, configState.agents);
-  sessionStore.setSessionDirectory(sessionId, metadata.path);
-  sessionStore.setWorktreeMetadata(sessionId, metadata);
+  sessionStore.setSessionDirectory(sessionId, startDirectory);
+  sessionStore.setWorktreeMetadata(sessionId, metadata, startDirectory);
   applyDefaultAgentAndModelSelection(sessionId, configState);
-  useDirectoryStore.getState().setDirectory(metadata.path, { showOverlay: false });
+  useDirectoryStore.getState().setDirectory(startDirectory, { showOverlay: false });
 };
 
+
+const rollBackCancelledDraftWorktree = (
+  requestId: string,
+  previousDraft: NewSessionDraftState,
+): void => {
+  const sessionStore = useSessionUIStore.getState();
+  // A draft that is never sent must not turn the cancel into an unhandled rejection.
+  void waitForPendingDraftWorktreeRequest(requestId).catch(() => undefined);
+  rejectPendingDraftWorktreeRequest(requestId, new Error('Worktree creation cancelled'));
+  if (!previousDraft.open) {
+    sessionStore.resolvePendingDraftWorktreeTarget(requestId, null);
+    sessionStore.closeNewSessionDraft();
+    return;
+  }
+  // Put the draft back where it was before the worktree was requested: its
+  // directory target, title and "Creating..." state belong to the cancelled request.
+  sessionStore.overrideNewSessionDraftTarget({
+    selectedProjectId: previousDraft.selectedProjectId,
+    directoryOverride: previousDraft.directoryOverride,
+    pendingWorktreeRequestId: previousDraft.pendingWorktreeRequestId ?? null,
+    bootstrapPendingDirectory: previousDraft.bootstrapPendingDirectory ?? null,
+    preserveDirectoryOverride: previousDraft.preserveDirectoryOverride === true,
+    title: previousDraft.title,
+    initialPrompt: previousDraft.initialPrompt,
+  });
+};
 
 const createInstantWorktreeDraft = async (options?: {
   initialPrompt?: string;
@@ -192,8 +245,8 @@ const createInstantWorktreeDraft = async (options?: {
 
   const activeProject = useProjectsStore.getState().getActiveProject();
   if (!activeProject?.path) {
-    toast.error(translateToast('session.newWorktree.error.noActiveProject'), {
-      description: translateToast('sessions.scheduledTasks.dialog.error.chooseProjectFirst'),
+    toast.error('No active project', {
+      description: 'Please select a project first.',
     });
     return null;
   }
@@ -208,8 +261,8 @@ const createInstantWorktreeDraft = async (options?: {
   }
 
   if (!isGitRepo) {
-    toast.error(translateToast('gitView.empty.notGitRepository'), {
-      description: translateToast('rightSidebar.contextNotesTodo.toast.worktreeRequiresGitRepo'),
+    toast.error('Not a Git repository', {
+      description: 'Worktrees can only be created in Git repositories.',
     });
     return null;
   }
@@ -218,15 +271,16 @@ const createInstantWorktreeDraft = async (options?: {
 
   try {
     const projectRef: ProjectRef = { id: activeProject.id, path: projectDirectory };
+    const previousDraft = useSessionUIStore.getState().newSessionDraft;
     const pendingRequestId = createPendingDraftWorktreeRequest();
 
     // Lock the draft immediately so no React effect can reset it to the project
     // root while we await worktree creation below.
     const sessionStore = useSessionUIStore.getState();
-    if (sessionStore.newSessionDraft?.open) {
+    if (previousDraft.open) {
       sessionStore.overrideNewSessionDraftTarget({
         projectId: projectRef.id,
-        directoryOverride: sessionStore.newSessionDraft.directoryOverride ?? projectRef.path,
+        directoryOverride: previousDraft.directoryOverride ?? projectRef.path,
         pendingWorktreeRequestId: pendingRequestId,
         preserveDirectoryOverride: true,
         title: options?.title,
@@ -247,7 +301,11 @@ const createInstantWorktreeDraft = async (options?: {
 
     // A preview path has no bootstrap state yet. Selecting it lets background
     // OpenCode reads initialize an instance before the worktree exists.
-    const metadata = await createQuickWorktree(projectRef, { preferredName });
+    const metadata = await createQuickWorktree(projectRef, { preferredName, cancelOnTrustDismiss: true });
+    if (!metadata) {
+      rollBackCancelledDraftWorktree(pendingRequestId, previousDraft);
+      return null;
+    }
 
     resolvePendingDraftWorktreeRequest(pendingRequestId, metadata.path);
     useSessionUIStore.getState().overrideNewSessionDraftTarget({
@@ -263,14 +321,14 @@ const createInstantWorktreeDraft = async (options?: {
 
     return metadata.path;
   } catch (error) {
-    const message = error instanceof Error ? error.message : translateToast('session.newWorktree.error.createWorktreeFailed');
+    const message = error instanceof Error ? error.message : 'Failed to create worktree';
     const requestId = useSessionUIStore.getState().newSessionDraft.pendingWorktreeRequestId;
     if (requestId) {
       rejectPendingDraftWorktreeRequest(requestId, error instanceof Error ? error : new Error(message));
       useSessionUIStore.getState().resolvePendingDraftWorktreeTarget(requestId, null);
     }
     useSessionUIStore.getState().setDraftBootstrapPendingDirectory(null);
-    toast.error(translateToast('session.newWorktree.error.createWorktreeFailed'), {
+    toast.error('Failed to create worktree', {
       description: message,
     });
     return null;
@@ -314,7 +372,7 @@ export async function createWorktreeSessionForNewBranch(
     createdFromBranch?: string;
     returnAfterDirectoryCreated?: boolean;
   }
-): Promise<{ id: string; branch: string; path: string } | null> {
+): Promise<{ id: string; branch: string; path: string; directory: string } | null> {
   if (isCreatingWorktreeSession) {
     return null;
   }
@@ -325,14 +383,14 @@ export async function createWorktreeSessionForNewBranch(
     const start = startPoint?.trim() || 'HEAD';
     const base = preferredBranchName?.trim();
     if (!base) {
-      throw new Error(translateToast('session.newWorktree.error.branchNameRequired'));
+      throw new Error('Branch name is required');
     }
 
     const kind = options?.kind ?? 'standard';
 
     const projectRef = resolveProjectRef(projectDirectory);
     if (!projectRef) {
-      throw new Error(translateToast('session.newWorktree.error.projectNotRegistered'));
+      throw new Error('Project is not registered in OpenChamber');
     }
 
     let isGitRepo = false;
@@ -343,8 +401,8 @@ export async function createWorktreeSessionForNewBranch(
     }
 
     if (!isGitRepo) {
-      toast.error(translateToast('gitView.empty.notGitRepository'), {
-        description: translateToast('rightSidebar.contextNotesTodo.toast.worktreeRequiresGitRepo'),
+      toast.error('Not a Git repository', {
+        description: 'Worktrees can only be created in Git repositories.',
       });
       return null;
     }
@@ -375,18 +433,19 @@ export async function createWorktreeSessionForNewBranch(
       await waitForWorktreeBootstrapIfEnabled(projectRef, metadata.path);
 
       const sessionStore = useSessionUIStore.getState();
-      const session = await sessionStore.createSession(undefined, metadata.path);
+      const startDirectory = await resolveCreatedWorktreeStartDirectory(projectRef, metadata);
+      const session = await sessionStore.createSession(undefined, startDirectory);
       if (!session) {
         await removeProjectWorktree(projectRef, metadata, { deleteLocalBranch: true }).catch(() => undefined);
-        throw new Error(translateToast('session.newWorktree.error.sessionCreateFailed'));
+        throw new Error('Could not create a session for the worktree.');
       }
 
-      initializeSessionForWorktree(session.id, createdMetadata);
+      initializeSessionForWorktree(session.id, startDirectory, createdMetadata);
 
-      return { id: session.id, branch: metadata.branch || base, path: metadata.path };
+      return { id: session.id, branch: metadata.branch || base, path: metadata.path, directory: startDirectory };
     } catch (error) {
-      const message = error instanceof Error ? error.message : translateToast('session.newWorktree.error.createWorktreeFailed');
-      toast.error(translateToast('session.newWorktree.error.createWorktreeFailed'), { description: message });
+      const message = error instanceof Error ? error.message : 'Failed to create worktree session';
+      toast.error('Failed to create worktree', { description: message });
       return null;
     }
   } finally {

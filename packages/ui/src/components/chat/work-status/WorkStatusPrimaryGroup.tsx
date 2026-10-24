@@ -27,8 +27,10 @@ import {
   WorkStatusValue,
 } from './WorkStatusPrimitives';
 import { useReportWorkStatusPresence } from './presenceContext';
+import { WorkStatusWarmingToggle } from './WorkStatusWarmingToggle';
 import { changeRequestCopy } from '@/lib/source-control/changeRequestCopy';
-import { formatChangeRequestReference } from '@/lib/source-control/identity';
+import { formatChangeRequestReference } from '@/lib/source-control/providers/terminology';
+import { useSourceControlProvider } from '@/lib/source-control/providers/registry';
 import { ProjectActionsButton } from '@/components/layout/ProjectActionsButton';
 import { OpenInAppButton } from '@/components/desktop/OpenInAppButton';
 import { useProjectActionsContext } from '@/hooks/useProjectActionsContext';
@@ -166,6 +168,8 @@ export const WorkStatusPrimaryGroup: React.FC<Props> = ({ sessionId, directory, 
   // here would multiply GitHub requests per open session, which is exactly the
   // fan-out the PR-status concurrency gate exists to prevent.
   const prSummary = useFreshestSourceControlVisualSummaryForBranch(gitDirectory, branch);
+  const prDescriptor = useSourceControlProvider(prSummary?.provider);
+  const prTerm = prDescriptor.terminology.changeRequest;
 
   const sessionMessages = useSessionMessages(sessionId ?? '', directory ?? undefined);
   const { context: contextLimit } = useContextWindowLimits(sessionId, directory ?? undefined);
@@ -271,6 +275,8 @@ export const WorkStatusPrimaryGroup: React.FC<Props> = ({ sessionId, directory, 
                 label={t('chat.workStatus.context.label')}
                 value={(
                   <>
+                    {/* Keeping the cache warm is about this context, so its switch sits on the row. */}
+                    <WorkStatusWarmingToggle sessionId={sessionId} directory={directory} />
                     <WorkStatusValue>{usagePercent !== null ? formatPercent(usagePercent) : UNKNOWN_PERCENT}</WorkStatusValue>
                     {/* No icon of its own: the sprite has no currency glyph, and
                         spend belongs with consumption anyway. The `$` labels it. */}
@@ -369,15 +375,15 @@ export const WorkStatusPrimaryGroup: React.FC<Props> = ({ sessionId, directory, 
               <WorkStatusRow
                 icon="git-pull-request"
                 onClick={directory ? () => openSurface('pr') : undefined}
-                ariaLabel={t(changeRequestCopy('chat.workStatus.action.openPr', prSummary.provider))}
+                ariaLabel={t(changeRequestCopy('chat.workStatus.action.openPr', prTerm))}
                 iconColor={`var(--pr-${prSummary.visualState})`}
-                label={prSummary.title ?? t(changeRequestCopy('chat.workStatus.pr.untitled', prSummary.provider))}
+                label={prSummary.title ?? t(changeRequestCopy('chat.workStatus.pr.untitled', prTerm))}
                 value={(
                   <WorkStatusPill
                     color={`var(--pr-${prSummary.visualState})`}
                     background={`color-mix(in srgb, var(--pr-${prSummary.visualState}) 18%, transparent)`}
                   >
-                    {prSummary.draft ? t('chat.workStatus.pr.draft') : formatChangeRequestReference(prSummary.provider, prSummary.number)}
+                    {prSummary.draft ? t('chat.workStatus.pr.draft') : formatChangeRequestReference(prDescriptor, prSummary.number)}
                   </WorkStatusPill>
                 )}
               />
@@ -385,7 +391,7 @@ export const WorkStatusPrimaryGroup: React.FC<Props> = ({ sessionId, directory, 
                 <WorkStatusRow
                   icon="checkbox-circle"
                   onClick={directory ? () => openSurface('pr') : undefined}
-                  ariaLabel={t(changeRequestCopy('chat.workStatus.action.openPr', prSummary.provider))}
+                  ariaLabel={t(changeRequestCopy('chat.workStatus.action.openPr', prTerm))}
                   label={t('chat.workStatus.pr.checks')}
                   muted
                   value={(
