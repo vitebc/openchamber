@@ -616,10 +616,15 @@ const openRequestFromToast = (sessionID: string, directory: string, requestID: s
 }
 
 /** A location-scoped form names no session to open; the toast then only announces it. */
-const formToastAction = (sessionID: string, directory: string, formID: string) => (
+const formToastAction = (
+  sessionID: string,
+  directory: string,
+  formID: string,
+  openSessionLabel: string
+) => (
   sessionID === LOCATION_SCOPED_FORM_SESSION_ID
     ? undefined
-    : { label: "Open session", onClick: () => openRequestFromToast(sessionID, directory, formID) }
+    : { label: openSessionLabel, onClick: () => openRequestFromToast(sessionID, directory, formID) }
 )
 
 /** Blank server strings mean "absent" here, not "empty title". */
@@ -1469,10 +1474,12 @@ export async function resyncBlockingRequestsForDirectory(
         const toastKey = getFormToastKey(sessionId, form.id)
         if (!toastKey || pendingFormToastIds.has(toastKey)) continue
         pendingFormToastIds.add(toastKey)
+        const dictionary = useI18nStore.getState().dictionary
+        const openSessionLabel = formatMessage(dictionary, 'chat.toast.opencodeRestartInterrupted.openSession')
         toast.info(form.title, {
           id: `form-${toastKey}`,
           description: FORM_TOAST_DESCRIPTION,
-          action: formToastAction(sessionId, directory, form.id),
+          action: formToastAction(sessionId, directory, form.id, openSessionLabel),
         })
       }
     }
@@ -1917,10 +1924,12 @@ const notifyFormCreated = (form: FormRequest, directory: string): void => {
   const toastKey = getFormToastKey(sessionID, form.id)
   if (isViewedInCurrentSession(directory, sessionID) || !toastKey || pendingFormToastIds.has(toastKey)) return
   pendingFormToastIds.add(toastKey)
+  const dictionary = useI18nStore.getState().dictionary
+  const openSessionLabel = formatMessage(dictionary, 'chat.toast.opencodeRestartInterrupted.openSession')
   toast.info(form.title, {
     id: `form-${toastKey}`,
     description: FORM_TOAST_DESCRIPTION,
-    action: formToastAction(sessionID, directory, form.id),
+    action: formToastAction(sessionID, directory, form.id, openSessionLabel),
   })
 }
 
@@ -1940,7 +1949,10 @@ const notifyWaitingPage = (event: Extract<SyncEvent, { type: "openchamber.page-w
   toast.info(page.title, {
     id: `page-${sessionID}:${page.id}`,
     description: FORM_TOAST_DESCRIPTION,
-    action: { label: "Open session", onClick: () => openSessionFromToast(sessionID, directory) },
+    action: {
+      label: formatMessage(useI18nStore.getState().dictionary, 'chat.toast.opencodeRestartInterrupted.openSession'),
+      onClick: () => openSessionFromToast(sessionID, directory),
+    },
   })
 }
 

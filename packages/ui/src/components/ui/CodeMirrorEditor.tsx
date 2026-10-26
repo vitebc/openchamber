@@ -11,33 +11,35 @@ import { createPortal } from 'react-dom';
 import { searchPanelSpace } from '@/lib/codemirror/searchPanelSpace';
 import { createVimModeExtensions } from '@/lib/codemirror/vimModeExtension';
 import { cn } from '@/lib/utils';
+import { formatMessage, useI18nStore, type I18nKey } from '@/lib/i18n';
 
 /** Patches `title` attributes onto CodeMirror search-panel controls for icon-only tooltips. */
-const buttonTooltips: Record<string, string> = {
-  next: 'Next match',
-  prev: 'Previous match',
-  select: 'Select all matches',
-  replace: 'Replace',
-  replaceAll: 'Replace all',
-  close: 'Close',
+const buttonTooltips: Record<string, I18nKey> = {
+  next: 'editor.search.nextMatch',
+  prev: 'editor.search.previousMatch',
+  select: 'editor.search.selectAllMatches',
+  replace: 'editor.search.replace',
+  replaceAll: 'editor.search.replaceAll',
+  close: 'editor.search.close',
 };
-const checkboxTooltips: Record<string, string> = {
-  case: 'Match case',
-  re: 'Regular expression',
-  word: 'Match whole word',
+const checkboxTooltips: Record<string, I18nKey> = {
+  case: 'editor.search.matchCase',
+  re: 'editor.search.regularExpression',
+  word: 'editor.search.matchWholeWord',
 };
 
-function patchSearchTooltips(root: HTMLElement) {
+function patchSearchTooltips(root: HTMLElement, dictionary: Record<I18nKey, string>) {
+  const t = (key: I18nKey) => formatMessage(dictionary, key);
   const panel = root.querySelector('.cm-search');
   if (!panel) return;
-  for (const [name, title] of Object.entries(buttonTooltips)) {
+  for (const [name, key] of Object.entries(buttonTooltips)) {
     const btn = panel.querySelector(`button[name="${name}"]`) as HTMLElement | null;
-    if (btn && !btn.title) btn.title = title;
+    if (btn && !btn.title) btn.title = t(key);
   }
-  for (const [name, title] of Object.entries(checkboxTooltips)) {
+  for (const [name, key] of Object.entries(checkboxTooltips)) {
     const input = panel.querySelector(`input[name="${name}"]`) as HTMLElement | null;
     const label = input?.parentElement;
-    if (label && !label.title) label.title = title;
+    if (label && !label.title) label.title = t(key);
   }
 }
 
@@ -572,7 +574,7 @@ export function CodeMirrorEditor({
       openSearchPanelCompat(view);
       // Patch tooltips after panel DOM is mounted
       requestAnimationFrame(() => {
-        patchSearchTooltips(view.dom);
+        patchSearchTooltips(view.dom, useI18nStore.getState().dictionary);
         syncSearchPanelStatus(view.dom, view, true);
       });
     } else {
