@@ -135,4 +135,13 @@ export const guestStatusViewI18n = {
     'chat.workStatus.guestView.pointNow': '{value} · עכשיו',
     'chat.workStatus.guestView.pointAgo': '{value} · לפני {seconds} שנ׳',
   },
+  ru: {
+    'chat.workStatus.guestView.reading': 'Чтение',
+    'chat.workStatus.guestView.empty': 'Пока нечего показать',
+    'chat.workStatus.guestView.unreachable': 'Сервис расширения не ответил.',
+    'chat.workStatus.guestView.invalid': 'Сервис расширения отправил то, что приложение не может показать.',
+    'chat.workStatus.guestView.actionFailed': 'Расширение не смогло это сделать.',
+    'chat.workStatus.guestView.pointNow': '{value} · сейчас',
+    'chat.workStatus.guestView.pointAgo': '{value} · {seconds} с назад',
+  },
 } as const;

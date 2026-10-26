@@ -120,4 +120,12 @@ export const markdownGithubI18n = {
     'chat.markdown.alert.caution': 'זהירות',
     'chat.markdown.suggestion.title': 'שינוי מוצע',
   },
+  ru: {
+    'chat.markdown.alert.note': 'Примечание',
+    'chat.markdown.alert.tip': 'Совет',
+    'chat.markdown.alert.important': 'Важно',
+    'chat.markdown.alert.warning': 'Предупреждение',
+    'chat.markdown.alert.caution': 'Осторожно',
+    'chat.markdown.suggestion.title': 'Предлагаемое изменение',
+  },
 } as const;
