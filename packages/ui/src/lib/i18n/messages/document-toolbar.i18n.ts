@@ -120,4 +120,12 @@ export const documentToolbarI18n = {
     'documentToolbar.wrapLines': '自動換行',
     'documentToolbar.autoSave': '自動儲存',
   },
+  ru: {
+    'documentToolbar.moreActions': 'Дополнительные действия',
+    'documentToolbar.preview': 'Предпросмотр',
+    'documentToolbar.tableView': 'Табличный вид',
+    'documentToolbar.treeView': 'Древовидный вид',
+    'documentToolbar.wrapLines': 'Перенос строк',
+    'documentToolbar.autoSave': 'Автосохранение',
+  },
 } as const;
