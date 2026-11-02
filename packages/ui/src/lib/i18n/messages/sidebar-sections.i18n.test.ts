@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test';
 
 import { sidebarSectionsI18n } from './sidebar-sections.i18n';
 
-const locales = ['en', 'de', 'fr', 'nl', 'es', 'ja', 'pt-BR', 'uk', 'ko', 'pl', 'zh-CN', 'zh-TW', 'tr', 'ar', 'he'] as const;
+const locales = ['en', 'de', 'fr', 'nl', 'es', 'ja', 'pt-BR', 'uk', 'ko', 'pl', 'zh-CN', 'zh-TW', 'tr', 'ar', 'he', 'ru'] as const;
 // Words those languages take from English as they are: git and forge terms, and a few words spelled the same.
 const SHARED_WITH_ENGLISH = new Map(Object.entries({
   de: new Set(['sessions.sidebar.sections.link.plan', 'sessions.sidebar.pinTo.newListName', 'sessions.sidebar.sections.name', 'sessions.sidebar.sections.kind.worktree', 'sessions.sidebar.sections.kind.space', 'sessions.sidebar.sections.link.issue']),
