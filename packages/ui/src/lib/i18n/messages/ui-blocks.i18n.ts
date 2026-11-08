@@ -1,6 +1,7 @@
 /** UI blocks an agent draws inside its reply (`components/chat/uiBlocks`) — merged into each locale's main dictionary. */
 export const uiBlocksI18n = {
   en: {
+    'chat.uiBlock.partial': 'Part of this block could not be drawn.',
     'chat.uiBlock.invalid': 'This block could not be drawn.',
     'chat.uiBlock.source': 'Source',
     'chat.uiBlock.sent': 'Sent',
@@ -20,6 +21,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': 'Total',
   },
   de: {
+    'chat.uiBlock.partial': 'Ein Teil dieses Blocks konnte nicht dargestellt werden.',
     'chat.uiBlock.invalid': 'Dieser Block konnte nicht dargestellt werden.',
     'chat.uiBlock.source': 'Quelltext',
     'chat.uiBlock.sent': 'Gesendet',
@@ -39,6 +41,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': 'Gesamt',
   },
   fr: {
+    'chat.uiBlock.partial': 'Une partie de ce bloc n’a pas pu être affichée.',
     'chat.uiBlock.invalid': 'Impossible d’afficher ce bloc.',
     'chat.uiBlock.source': 'Code source',
     'chat.uiBlock.sent': 'Envoyé',
@@ -58,6 +61,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': 'Total',
   },
   nl: {
+    'chat.uiBlock.partial': 'Een deel van dit blok kon niet worden weergegeven.',
     'chat.uiBlock.invalid': 'Dit blok kon niet worden weergegeven.',
     'chat.uiBlock.source': 'Broncode',
     'chat.uiBlock.sent': 'Verzonden',
@@ -77,6 +81,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': 'Totaal',
   },
   'zh-CN': {
+    'chat.uiBlock.partial': '此区块的部分内容无法绘制。',
     'chat.uiBlock.invalid': '无法绘制此区块。',
     'chat.uiBlock.source': '源代码',
     'chat.uiBlock.sent': '已发送',
@@ -96,6 +101,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': '合计',
   },
   'zh-TW': {
+    'chat.uiBlock.partial': '此區塊的部分內容無法繪製。',
     'chat.uiBlock.invalid': '無法繪製此區塊。',
     'chat.uiBlock.source': '原始碼',
     'chat.uiBlock.sent': '已傳送',
@@ -115,6 +121,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': '合計',
   },
   uk: {
+    'chat.uiBlock.partial': 'Частину цього блоку не вдалося намалювати.',
     'chat.uiBlock.invalid': 'Не вдалося намалювати цей блок.',
     'chat.uiBlock.source': 'Код',
     'chat.uiBlock.sent': 'Надіслано',
@@ -134,6 +141,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': 'Разом',
   },
   es: {
+    'chat.uiBlock.partial': 'No se pudo dibujar una parte de este bloque.',
     'chat.uiBlock.invalid': 'No se pudo dibujar este bloque.',
     'chat.uiBlock.source': 'Código fuente',
     'chat.uiBlock.sent': 'Enviado',
@@ -153,6 +161,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': 'Total',
   },
   'pt-BR': {
+    'chat.uiBlock.partial': 'Não foi possível desenhar parte deste bloco.',
     'chat.uiBlock.invalid': 'Não foi possível desenhar este bloco.',
     'chat.uiBlock.source': 'Código-fonte',
     'chat.uiBlock.sent': 'Enviado',
@@ -172,6 +181,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': 'Total',
   },
   ko: {
+    'chat.uiBlock.partial': '이 블록의 일부를 그릴 수 없습니다.',
     'chat.uiBlock.invalid': '이 블록을 그릴 수 없습니다.',
     'chat.uiBlock.source': '소스 코드',
     'chat.uiBlock.sent': '보냄',
@@ -191,6 +201,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': '합계',
   },
   pl: {
+    'chat.uiBlock.partial': 'Nie udało się narysować części tego bloku.',
     'chat.uiBlock.invalid': 'Nie udało się narysować tego bloku.',
     'chat.uiBlock.source': 'Kod źródłowy',
     'chat.uiBlock.sent': 'Wysłano',
@@ -210,6 +221,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': 'Razem',
   },
   ja: {
+    'chat.uiBlock.partial': 'このブロックの一部を描画できませんでした。',
     'chat.uiBlock.invalid': 'このブロックを描画できませんでした。',
     'chat.uiBlock.source': 'ソースコード',
     'chat.uiBlock.sent': '送信しました',
@@ -229,6 +241,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': '合計',
   },
   tr: {
+    'chat.uiBlock.partial': 'Bu bloğun bir kısmı çizilemedi.',
     'chat.uiBlock.invalid': 'Bu blok çizilemedi.',
     'chat.uiBlock.source': 'Kaynak kodu',
     'chat.uiBlock.sent': 'Gönderildi',
@@ -248,6 +261,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': 'Toplam',
   },
   ar: {
+    'chat.uiBlock.partial': 'تعذّر رسم جزء من هذه الكتلة.',
     'chat.uiBlock.invalid': 'تعذّر رسم هذه الكتلة.',
     'chat.uiBlock.source': 'الشيفرة المصدرية',
     'chat.uiBlock.sent': 'تم الإرسال',
@@ -267,6 +281,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': 'الإجمالي',
   },
   he: {
+    'chat.uiBlock.partial': 'לא ניתן היה לצייר חלק מהבלוק הזה.',
     'chat.uiBlock.invalid': 'לא ניתן היה לצייר את הבלוק הזה.',
     'chat.uiBlock.source': 'קוד המקור',
     'chat.uiBlock.sent': 'נשלח',
@@ -284,24 +299,5 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.largest': 'הגבוה ביותר',
     'chat.uiBlock.chart.average': 'ממוצע',
     'chat.uiBlock.chart.total': 'סך הכול',
-  },
-  ru: {
-    'chat.uiBlock.invalid': 'Не удалось отрисовать этот блок.',
-    'chat.uiBlock.source': 'Источник',
-    'chat.uiBlock.sent': 'Отправлено',
-    'chat.uiBlock.send': 'Отправить',
-    'chat.uiBlock.sendFailed': 'Не отправлено. Попробуйте ещё раз.',
-    'chat.uiBlock.chosenCount': 'Выбрано {count} из {total}',
-    'chat.uiBlock.sendChosen': 'Отправить выбранное',
-    'chat.uiBlock.note.add': 'Добавить комментарий',
-    'chat.uiBlock.note.placeholder': 'Что ещё учесть',
-    'chat.uiBlock.note.label': 'Комментарий',
-    'chat.uiBlock.change': 'Изменить',
-    'chat.uiBlock.note.answerOnly': 'Ответить только комментарием',
-    'chat.uiBlock.progress.ofTotal': '{value} из {max}',
-    'chat.uiBlock.chart.changeSince': '{change} с {label}',
-    'chat.uiBlock.chart.largest': 'Наибольшее',
-    'chat.uiBlock.chart.average': 'Среднее',
-    'chat.uiBlock.chart.total': 'Итого',
   },
 } as const;
