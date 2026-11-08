@@ -257,6 +257,8 @@ export const secretRequestI18n = {
   },
   ru: {
     'chat.secretRequest.inputLabel': 'Значение секрета',
+    'chat.secretRequest.showSecret': 'Показать секрет',
+    'chat.secretRequest.hideSecret': 'Скрыть секрет',
     'chat.secretRequest.placeholder': 'Вставьте значение',
     'chat.secretRequest.save': 'Сохранить безопасно',
     'chat.secretRequest.decline': 'Отклонить',

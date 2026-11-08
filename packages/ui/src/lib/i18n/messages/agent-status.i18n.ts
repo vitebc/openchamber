@@ -1276,6 +1276,7 @@ export const agentStatusI18n = {
     'chat.agentStatus.knowledge.update': 'обновляет знания проекта',
     'chat.agentStatus.knowledge.showPlan': 'показывает план',
     'chat.agentStatus.notify': 'отправляет уведомление',
+    'chat.agentStatus.usage': 'проверяет лимиты использования',
     'chat.agentStatus.render': 'рисует страницу',
     'chat.agentStatus.image': 'генерирует изображение',
     'chat.agentStatus.secret': 'запрашивает секрет',

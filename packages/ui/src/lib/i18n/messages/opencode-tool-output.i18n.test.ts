@@ -3,7 +3,7 @@ import { describe, expect, test } from 'bun:test';
 import { OPENCODE_TOOL_VERB_KEYS } from '@/components/chat/message/parts/opencodeToolResult';
 import { opencodeToolOutputI18n } from './opencode-tool-output.i18n';
 
-const locales = ['en', 'de', 'fr', 'nl', 'es', 'ja', 'pt-BR', 'uk', 'ko', 'pl', 'zh-CN', 'zh-TW', 'tr', 'ar', 'he'] as const;
+const locales = ['en', 'de', 'fr', 'nl', 'es', 'ja', 'pt-BR', 'uk', 'ko', 'pl', 'zh-CN', 'zh-TW', 'tr', 'ar', 'he', 'ru'] as const;
 
 describe('OpenCode tool output translations', () => {
   test('every locale has every key, filled, with the same placeholders', () => {

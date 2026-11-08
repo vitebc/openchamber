@@ -241,7 +241,7 @@ export const surfacePanelI18n = {
     'contextPanel.surface.ended.host-shutdown': 'OpenChamber נסגר.',
   },
   ru: {
-    'contextPanel.surface.unavailable': 'Поверхность этого расширения недоступна. Проверьте, что оно включено и одобрено в «Настройки → Расширения».',
+    'contextPanel.surface.unavailable': 'Просмотр этого расширения недоступен. Проверьте, что оно включено и одобрено в разделе «Настройки → Расширения».',
     'contextPanel.surface.status.connecting': 'Подключение…',
     'contextPanel.surface.status.reconnecting': 'Соединение потеряно. Переподключение…',
     'contextPanel.surface.status.ready': 'Нажмите или начните печатать, чтобы взять управление',
@@ -251,7 +251,7 @@ export const surfacePanelI18n = {
     'contextPanel.surface.status.otherControls': 'Управляет другое устройство',
     'contextPanel.surface.handBack': 'Вернуть агенту',
     'contextPanel.surface.retry': 'Попробовать ещё раз',
-    'contextPanel.surface.canvasAria': 'Живая поверхность {name}',
+    'contextPanel.surface.canvasAria': 'Просмотр {name} в реальном времени',
     'contextPanel.surface.ended.service-stopped': 'Служба расширения остановилась.',
     'contextPanel.surface.ended.extension-unavailable': 'Расширение недоступно. Проверьте «Настройки → Расширения».',
     'contextPanel.surface.ended.host-shutdown': 'OpenChamber завершает работу.',

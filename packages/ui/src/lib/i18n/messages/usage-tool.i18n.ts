@@ -90,4 +90,10 @@ export const usageToolI18n = {
     'settings.openchamber.tools.field.agentUsageToolInfo': 'סוכנים רואים את מה שמוצג בדף השימוש, בלי החשבון שאיתו מחוברים לכל ספק. כל בדיקה פונה שוב לספקים.',
     'settings.openchamber.tools.field.agentUsageToolAria': 'הפעלת כלי השימוש לסוכנים',
   },
+  ru: {
+    'settings.openchamber.tools.field.agentUsageTool': 'Инструмент использования для агентов',
+    'settings.openchamber.tools.field.agentUsageToolSummary': 'Позволяет агентам проверять лимиты ваших провайдеров и сроки их сброса.',
+    'settings.openchamber.tools.field.agentUsageToolInfo': 'Агенты видят то же, что страница «Использование», кроме учётной записи, под которой вы вошли у каждого провайдера. Каждая проверка заново обращается к вашим провайдерам.',
+    'settings.openchamber.tools.field.agentUsageToolAria': 'Включить инструмент использования для агентов',
+  },
 } as const;
