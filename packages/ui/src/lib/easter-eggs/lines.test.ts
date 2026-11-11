@@ -23,7 +23,7 @@ import { draftMomentAt, draftTitleLine, gitCleanLine, netDeletionLine, NET_DELET
 
 const COPIES = {
   en, de, fr, nl, 'zh-CN': zhCN, 'zh-TW': zhTW, uk, es, 'pt-BR': ptBR, ko, pl, ja, tr, ar, he,
-} satisfies Record<Locale, EasterEggCopy>;
+} satisfies Record<Exclude<Locale, 'ru'>, EasterEggCopy>;
 
 // Local time, the way the app reads the clock. 2026-10-30 is a Friday.
 const at = (month: number, day: number, hour: number, minute = 0) => new Date(2026, month - 1, day, hour, minute);
@@ -150,8 +150,12 @@ describe('lines', () => {
 });
 
 describe('every locale', () => {
-  test('has its own copy', () => {
-    expect(Object.keys(COPIES).sort()).toEqual([...LOCALES].sort());
+  test('only known locales have a copy', () => {
+    // The ru fork adds a dictionary-only locale: it falls back to the ordinary
+    // translated text, so a missing copy is allowed. Every copy that exists
+    // must belong to a known locale.
+    const known = new Set<string>(LOCALES);
+    expect(Object.keys(COPIES).every((locale) => known.has(locale))).toBe(true);
   });
 
   for (const [locale, copy] of Object.entries(COPIES)) {

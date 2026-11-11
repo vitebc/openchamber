@@ -6,7 +6,7 @@ This module owns the small jokes the app tells at ordinary moments: the rotating
 
 ## Invariants
 
-- Every line lives in `copy/<locale>.ts`, one file per UI locale, typed by `copy/types.ts`. `lines.test.ts` fails when a locale is missing or a line lost the placeholder the code fills (`{project}`, `{time}`, `{count}`).
+- Every line lives in `copy/<locale>.ts`, one file per UI locale that has its own jokes. A locale without a copy file shows the ordinary translated text instead; `lines.test.ts` fails when a listed copy lost the placeholder the code fills (`{project}`, `{time}`, `{count}`).
 - A caller falls back to its ordinary translated text while the locale's copy loads and wherever a picker returns null. No one sees another language's joke, and nothing waits on this module.
 - The clock is the viewer's local clock, read at the moment the line is picked.
 - A line stays put while it is on screen: a draft keeps its heading while open, the clean state keeps its line while shown.
@@ -18,6 +18,10 @@ This module owns the small jokes the app tells at ordinary moments: the rotating
 - Enterprise mode shows all of this. The jokes are part of the product, not a consumer extra.
 
 ## Decisions
+
+### Why a locale may have no copy file
+
+The Russian fork adds `ru` to the locale list without translating the jokes. `LOADERS` is partial and a missing loader leaves the copy unloaded, which every caller already treats as "show the ordinary translated text". Requiring a copy for every locale turns adding a dictionary-only locale into a startup crash: v2.7.0 subscribed to locale changes and called `LOADERS['ru']` on a locale with no file.
 
 ### Why separate copy files and not the i18n dictionaries
 

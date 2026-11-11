@@ -5,6 +5,8 @@ import { useI18n, useI18nStore, type Locale } from '@/lib/i18n';
 import { copy as enCopy } from './copy/en';
 import type { EasterEggCopy } from './copy/types';
 
+// Locales without a copy file (the ru fork ships none) fall back to the
+// callers' ordinary translated text instead of loading a joke file.
 const LOADERS = {
   de: () => import('./copy/de'),
   fr: () => import('./copy/fr'),
@@ -20,7 +22,11 @@ const LOADERS = {
   tr: () => import('./copy/tr'),
   ar: () => import('./copy/ar'),
   he: () => import('./copy/he'),
-} satisfies Record<Exclude<Locale, 'en'>, () => Promise<{ copy: EasterEggCopy }>>;
+};
+
+type CopyLocale = keyof typeof LOADERS;
+
+const hasCopy = (locale: Locale): locale is CopyLocale => locale in LOADERS;
 
 const useCopyStore = create<{ byLocale: Partial<Record<Locale, EasterEggCopy>> }>(() => ({ byLocale: { en: enCopy } }));
 
@@ -28,6 +34,7 @@ const requested = new Set<Locale>(['en']);
 
 const request = (locale: Locale) => {
   if (locale === 'en' || requested.has(locale)) return;
+  if (!hasCopy(locale)) return;
   requested.add(locale);
   LOADERS[locale]()
     .then(({ copy }) => useCopyStore.setState((state) => ({ byLocale: { ...state.byLocale, [locale]: copy } })))
