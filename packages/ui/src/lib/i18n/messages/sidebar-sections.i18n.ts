@@ -1373,6 +1373,8 @@ export const sidebarSectionsI18n = {
     'sessions.sidebar.folders.newFolderTitle': 'Новая папка',
     'sessions.sidebar.folders.newFolderCreate': 'Создать и переместить',
     'sessions.sidebar.sections.open': 'Настроить разделы…',
+    'sessions.sidebar.sections.customize': 'Настроить разделы',
+    'sessions.sidebar.activity.pagesTitle': 'Страницы',
     'sessions.sidebar.sections.title': 'Разделы боковой панели',
     'sessions.sidebar.sections.new': 'Новый раздел',
     'sessions.sidebar.sections.newTitle': 'Новый раздел',

@@ -165,4 +165,15 @@ export const aboutReleaseNotesI18n = {
     'releaseNotes.group.sdk': 'SDK',
     'releaseNotes.group.misc': 'שונות',
   },
+  ru: {
+    'settings.openchamber.about.releaseNotes.current': 'Что нового в {version}',
+    'settings.openchamber.about.releaseNotes.since': 'Что нового с {version}',
+    'settings.openchamber.about.releaseNotes.allReleases': 'Все релизы',
+    'releaseNotes.showAll': 'Показать все',
+    'releaseNotes.group.new': 'Новое',
+    'releaseNotes.group.improvements': 'Улучшения',
+    'releaseNotes.group.fixes': 'Исправления',
+    'releaseNotes.group.sdk': 'SDK',
+    'releaseNotes.group.misc': 'Прочее',
+  },
 } as const;

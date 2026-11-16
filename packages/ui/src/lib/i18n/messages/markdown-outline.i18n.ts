@@ -90,4 +90,10 @@ export const markdownOutlineI18n = {
     'filesView.preview.outline.noHeadings': 'אין כותרות במסמך זה',
     'filesView.preview.outline.noMatches': 'אין כותרות תואמות',
   },
+  ru: {
+    'filesView.preview.outline.label': 'Структура',
+    'filesView.preview.outline.placeholder': 'Перейти к заголовку…',
+    'filesView.preview.outline.noHeadings': 'В этом документе нет заголовков',
+    'filesView.preview.outline.noMatches': 'Нет подходящих заголовков',
+  },
 };

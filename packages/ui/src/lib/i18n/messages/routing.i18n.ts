@@ -2023,7 +2023,6 @@ export const routingI18n = {
     'routing.safetyKind.unknown': 'непонятный эффект',
     'routing.toast.safetySkipped': 'Защитная проверка не смогла проверить действие, поэтому автопринятие сработало как обычно',
     'settings.page.routing.title': 'Роутинг',
-    'settings.page.routing.description': 'Автоматически подбирает модель под каждый запрос и спрашивает вас перед рискованными действиями в сессиях с автопринятием.',
     'settings.routing.loadError': 'Не удалось загрузить настройки роутинга: {error}',
     'settings.routing.unavailable': 'Роутинг недоступен на этом сервере.',
     'settings.routing.token.label': 'API-ключ TypeSafe (необязательно)',

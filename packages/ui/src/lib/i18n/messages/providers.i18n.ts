@@ -1216,7 +1216,6 @@ export const providersI18n = {
     'settings.providers.accounts.toast.renameFailed': 'לא ניתן היה לשנות את שם החשבון',
   },
   ru: {
-    'settings.providers.grid.description': 'Провайдеры моделей, которые может использовать OpenCode. Откройте провайдера, чтобы управлять его аккаунтами и моделями.',
     'settings.providers.enterpriseTitle': 'Режим enterprise',
     'settings.providers.enterpriseManagedBy': 'Управляет {organization}.',
     'settings.providers.enterprisePolicyUnreadable': 'Не удалось прочитать файл политики на этом компьютере, поэтому режим enterprise остаётся включённым. Попросите администратора проверить его.',
@@ -1257,6 +1256,7 @@ export const providersI18n = {
     'settings.openchamber.defaults.field.fallbackThinking': 'Рассуждения резервной модели',
     'settings.openchamber.defaults.newSessionsTitle': 'Новые сессии',
     'settings.openchamber.defaults.field.model': 'Модель',
+    'settings.openchamber.defaults.field.modelUnavailable': 'Эта модель больше недоступна, поэтому новые сессии используют другую модель.',
     'settings.openchamber.defaults.field.agent': 'Агент',
     'settings.openchamber.defaults.promptCacheTitle': 'Кеш промптов',
     'settings.openchamber.defaults.usageLimitsTitle': 'Лимиты использования',
