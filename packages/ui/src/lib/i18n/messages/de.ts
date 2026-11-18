@@ -18,6 +18,7 @@ import { updateDialogCanaryI18n } from './update-dialog-canary.i18n';
 import { aboutReleaseNotesI18n } from './about-release-notes.i18n';
 import { updateCheckErrorsI18n } from './update-check-errors.i18n';
 import { secretRequestI18n } from './secret-request.i18n';
+import { questionsInChatI18n } from './questions-in-chat.i18n';
 import { sessionNoticesI18n } from './session-notices.i18n';
 import { settingsHintsI18n } from './settings-hints.i18n';
 import { usageStatsI18n } from './usage-stats.i18n';
@@ -27,12 +28,15 @@ import { compactionSettingsI18n } from './compaction-settings.i18n';
 import { heapSnapshotI18n } from './heap-snapshot.i18n';
 import { consoleBudgetsI18n } from './console-budgets.i18n';
 import { imageToolI18n } from './image-tool.i18n';
+import { sharePagesI18n } from './share-pages.i18n';
+import { receivedPagesI18n } from './received-pages.i18n';
 import { memoryDreamingI18n } from './memory-dreaming.i18n';
 import { usageToolI18n } from './usage-tool.i18n';
 import { openchamberToolsLayoutI18n } from './openchamber-tools-layout.i18n';
 import { openchamberToolOutputI18n } from './openchamber-tool-output.i18n';
 import { opencodeToolOutputI18n } from './opencode-tool-output.i18n';
 import { agentStatusI18n } from './agent-status.i18n';
+import { androidWidgetsI18n } from './android-widgets.i18n';
 import { selectionApprovalI18n } from './selection-approval.i18n';
 import { snippetsI18n } from './snippets.i18n';
 import { sidebarWorkI18n } from './sidebar-work.i18n';
@@ -203,6 +207,7 @@ export const dict = {
   ...aboutReleaseNotesI18n.de,
   ...updateCheckErrorsI18n.de,
   ...secretRequestI18n.de,
+  ...questionsInChatI18n.de,
   ...sessionNoticesI18n.de,
   ...settingsHintsI18n.de,
   ...usageStatsI18n.de,
@@ -212,12 +217,15 @@ export const dict = {
   ...heapSnapshotI18n.de,
   ...consoleBudgetsI18n.de,
   ...imageToolI18n.de,
+  ...sharePagesI18n.de,
+  ...receivedPagesI18n.de,
   ...memoryDreamingI18n.de,
   ...usageToolI18n.de,
   ...openchamberToolsLayoutI18n.de,
   ...openchamberToolOutputI18n.de,
   ...opencodeToolOutputI18n.de,
   ...agentStatusI18n.de,
+  ...androidWidgetsI18n.de,
   ...snippetsI18n.de,
   ...sidebarWorkI18n.de,
   ...sidebarSectionsI18n.de,
@@ -269,7 +277,6 @@ export const dict = {
   'common.language.polish': 'Polnisch',
   'common.language.japanese': 'Japanisch',
   'common.language.turkish': 'Türkisch',
-  'common.language.russian': 'Russisch',
   'common.language.arabic': 'Arabisch',
   'common.language.hebrew': 'Hebräisch',
   'common.language.dutch': 'Niederländisch',
@@ -751,7 +758,7 @@ export const dict = {
   'sessions.sidebar.session.status.backgroundCommand': 'Befehl läuft im Hintergrund',
   'sessions.sidebar.session.status.backgroundImage': 'Bild wird im Hintergrund erstellt',
   'sessions.sidebar.session.status.waitingOnPullRequest': 'Wartet auf Prüfungen oder ein Review',
-  'sessions.sidebar.session.status.waitingOnExtension': 'Wartet auf eine Erweiterung',
+  'sessions.sidebar.session.status.waitingOnExtension': 'Wartet auf einen Timer oder eine Erweiterung',
   'sessions.sidebar.session.status.pinned': 'Angeheftete Sitzung',
   'sessions.sidebar.session.status.permissionRequired': 'Berechtigung erforderlich',
   'sessions.sidebar.session.status.questionPending': 'Ausstehende Frage',
@@ -1363,6 +1370,7 @@ export const dict = {
   'contextPanel.browser.device.schemeSystem': 'Auto',
   'contextPanel.browser.device.schemeLight': 'Hell',
   'contextPanel.browser.device.schemeDark': 'Dunkel',
+  'contextPanel.browser.device.scheme': "Seitenaussehen",
   'contextPanel.browser.device.schemeFailed': 'Das Seitenaussehen konnte nicht geändert werden',
   'contextPanel.browser.frameTitle': 'Browser',
   'contextPanel.browser.loadFailed': 'Diese Seite konnte nicht geladen werden',
@@ -1391,7 +1399,6 @@ export const dict = {
   'contextPanel.browser.annotate.tool.draw': 'Zeichnen',
   'contextPanel.browser.annotate.commentPlaceholder': 'Änderung beschreiben...',
   'contextPanel.browser.annotate.submit': 'Anhängen',
-  'contextPanel.browser.trustNotice': 'Seiten, die hier geöffnet werden, laufen mit vollständigem Zugriff auf OpenChamber — erforderlich für Inspect und Screenshots. Öffnen Sie nur Seiten, denen Sie vertrauen: Eine bösartige Seite könnte Ihre Daten lesen oder in Ihrem Namen handeln.',
   'contextPanel.tab.closeTabAria': '{label}-Registerkarte schließen',
   'contextPanel.tab.menu.close': 'Schließen',
   'contextPanel.tab.menu.closeOthers': 'Andere schließen',
@@ -2162,8 +2169,6 @@ export const dict = {
   'session.newWorktree.error.noActiveProject': 'Kein aktives Projekt',
   'session.newWorktree.error.branchNameRequired': 'Branch-Name ist erforderlich',
   'session.newWorktree.error.worktreeDirectoryRequired': 'Worktree-Verzeichnis ist erforderlich',
-  'session.newWorktree.error.projectNotRegistered': 'Projekt ist nicht in OpenChamber registriert',
-  'session.newWorktree.error.sessionCreateFailed': 'Sitzung für den Worktree konnte nicht erstellt werden',
   'session.newWorktree.error.createWorktreeFailed': 'Fehler beim Erstellen des Worktrees',
   'session.newWorktree.error.changeRequestAuthorityMissing': 'Dieser Pull Request ist nicht mehr verfügbar. Wähle ihn erneut.',
   'session.newWorktree.mr.authorityMissing': 'Dieser Merge Request ist nicht mehr verfügbar. Wähle ihn erneut.',
@@ -2270,15 +2275,7 @@ export const dict = {
   'chat.toast.opencodeRestartInterrupted.description': 'OpenCode wurde neu gestartet, während noch eine Antwort lief. Senden Sie eine Nachricht, um fortzufahren.',
   'chat.toast.opencodeRestartInterrupted.autoResumeDescription': 'OpenCode wurde neu gestartet, während noch eine Antwort lief. Der Chat wird automatisch fortgesetzt; senden Sie eine Nachricht, falls nicht.',
   'chat.toast.opencodeRestartInterrupted.openSession': 'Sitzung öffnen',
-  'editor.search.nextMatch': 'Next match',
-  'editor.search.previousMatch': 'Previous match',
-  'editor.search.selectAllMatches': 'Select all matches',
-  'editor.search.replace': 'Replace',
-  'editor.search.replaceAll': 'Replace all',
-  'editor.search.close': 'Close',
-  'editor.search.matchCase': 'Match case',
-  'editor.search.regularExpression': 'Regular expression',
-  'editor.search.matchWholeWord': 'Match whole word',
+  'chat.toast.shareAnswer.openSession': 'Sitzung öffnen',
   'chat.errorBoundary.title': 'Chat-Fehler',
   'chat.errorBoundary.description': 'Die Chat-Oberfläche hat einen Fehler festgestellt. Dies könnte auf ein vorübergehendes Netzwerkproblem oder beschädigte Nachrichtendaten zurückzuführen sein.',
   'chat.errorBoundary.sessionLabel': 'Sitzung',
@@ -2409,8 +2406,6 @@ export const dict = {
   'chat.messageBody.forkDialog.instructions.label': 'Anweisungen',
   'chat.messageBody.forkDialog.instructions.placeholder': 'Fügen Sie Anweisungen für die neue Sitzung hinzu…',
   'chat.messageBody.forkDialog.createWorktree': 'Worktree erstellen',
-  'chat.messageBody.forkDialog.toast.forked': 'Abgezweigt von {title}',
-  'chat.messageBody.forkDialog.toast.forkFailed': 'Fehler beim Abzweigen der Sitzung',
   'chat.generatedResult.actions.copy': 'Kopieren',
   'chat.generatedResult.actions.copied': 'Kopiert',
   'chat.generatedResult.commit.title': 'Generierte Commit-Nachricht',
@@ -2580,7 +2575,6 @@ export const dict = {
   'chat.permissionCard.patterns': 'Muster:',
   'chat.permissionToast.sessionFallback': 'Sitzung',
   'chat.permissionToast.permissionFallback': 'Berechtigungsdetails nicht verfügbar',
-  'chat.permissionToast.respondFailed': 'Antwort auf die Berechtigungsanfrage fehlgeschlagen',
   'chat.permissionToast.labels.session': 'Sitzung:',
   'chat.permissionToast.labels.permission': 'Berechtigung:',
   'chat.permissionToast.actions.once': 'Einmal',
@@ -2833,8 +2827,8 @@ export const dict = {
   'projects.sharedTrust.actions': 'Aktionen',
   'projects.sharedTrust.skip': 'Diesmal nicht',
   'projects.sharedTrust.trust': 'Vertrauen und ausführen',
-  'projects.opencodeTrust.title': 'OpenCode Code aus diesem Ordner ausführen lassen?',
-  'projects.opencodeTrust.description': 'OpenCode führt die Plugins und Befehle aus der Konfiguration von {path} aus, sobald es den Ordner öffnet. Vertraue ihnen einmal, und OpenChamber fragt erst wieder, wenn sie sich ändern.',
+  'projects.opencodeTrust.title': 'Der OpenCode-Konfiguration in diesem Ordner vertrauen?',
+  'projects.opencodeTrust.description': 'OpenCode wendet alles unten aus der Konfiguration von {path} an, sobald es den Ordner öffnet. Vertraue ihr einmal, und OpenChamber fragt erst wieder, wenn sich das ändert.',
   'projects.opencodeTrust.plugins': 'Plugins',
   'projects.opencodeTrust.commands': 'Befehle',
   'projects.opencodeTrust.kind.package': '{name} (npm-Paket)',
@@ -2843,6 +2837,12 @@ export const dict = {
   'projects.opencodeTrust.kind.lsp': 'Sprachserver {name}',
   'projects.opencodeTrust.kind.formatter': 'Formatierer {name}',
   'projects.opencodeTrust.kind.shell': 'Shell',
+  'projects.opencodeTrust.kind.env': 'Umgebungsvariable {name}',
+  'projects.opencodeTrust.kind.file': 'Datei {path}',
+  'projects.opencodeTrust.values': 'Werte von deinem Rechner, die sie nach außen senden kann',
+  'projects.opencodeTrust.permissions': 'Berechtigungen, die sie erlaubt',
+  'projects.opencodeTrust.permission.agent': 'Agent {name}',
+  'projects.opencodeTrust.permission.everyAgent': 'Alle Agenten',
   'projects.opencodeTrust.paused': 'Ohne Vertrauen können Agenten in diesem Ordner nicht arbeiten, aber Dateien und Git-Änderungen kannst du weiter ansehen.',
   'projects.opencodeTrust.skip': 'Diesmal nicht',
   'projects.opencodeTrust.trust': 'Vertrauen und öffnen',
@@ -2963,7 +2963,6 @@ export const dict = {
   'desktopHostSwitcher.error.pairingInvalidResponse': 'Der Server hat eine ungültige Antwort auf die Kopplungsanfrage zurückgegeben.',
   'desktopHostSwitcher.error.failedToOpenNewWindow': 'Öffnen eines neuen Fensters fehlgeschlagen',
   'desktopHostSwitcher.instance.local': 'Lokal',
-  'desktopHostSwitcher.instance.localOpenChamber': 'Lokales OpenChamber',
   'desktopHostSwitcher.instance.fallback': 'Instanz',
   'desktopHostSwitcher.startup.title': 'Standard-SSH-Instanz nicht verfügbar',
   'desktopHostSwitcher.startup.connectingTo': 'Verbindung zu {host} herstellen...',
@@ -3692,6 +3691,8 @@ export const dict = {
   'chat.workStatus.telemetry.toolDurationDescription': 'Laufzeit der Werkzeuge einschließlich fehlgeschlagener Aufrufe. Parallel laufende Werkzeuge zählen zeitlich nur einmal.',
   'chat.workStatus.telemetry.ttft': 'Mittlere TTFT',
   'chat.workStatus.telemetry.ttftDescription': 'Mittlere Wartezeit bis zum ersten Text oder Denkabschnitt jedes Modellschritts. Ausgeblendet, wenn ein Schritt nach seiner Erstellung keinen Start hat. Das ist bei reinen Werkzeugschritten häufig und bei Teilen, die nur mit ihrer Erstellungszeit versehen sind.',
+  'chat.workStatus.telemetry.firstOutput': 'Ø erste Ausgabe',
+  'chat.workStatus.telemetry.firstOutputDescription': 'Durchschnittliche Wartezeit vom Beginn jedes Modellschritts bis zur ersten Ausgabe des Modells: Text, Reasoning oder ein Tool-Aufruf. Anders als bei TTFT zählen auch Schritte, die mit einem Tool-Aufruf beginnen. Für Schritte aus OpenCode vor 2.3.0 ausgeblendet.',
   'chat.workStatus.telemetry.steps': 'Schritte',
   'chat.workStatus.telemetry.stepsDescription': 'Wie oft das Modell für diesen Prompt aufgerufen wurde. Werkzeugergebnisse lesen und den nächsten Schritt entscheiden erfordert meist einen weiteren Aufruf.',
   'chat.workStatus.telemetry.tokens': 'Tokens',
@@ -4023,4 +4024,20 @@ export const dict = {
   'chat.promptHistorySearch.hint': "↑ ↓ zum Durchsuchen · Enter zum Laden · Esc zum Schließen",
   'helpDialog.item.searchPromptHistory': "Prompt-Verlauf durchsuchen (Chat-Eingabe)",
 
+  'common.language.russian': 'Russisch',
+  'session.newWorktree.error.projectNotRegistered': 'Projekt ist nicht in OpenChamber registriert',
+  'session.newWorktree.error.sessionCreateFailed': 'Sitzung für den Worktree konnte nicht erstellt werden',
+  'editor.search.nextMatch': 'Next match',
+  'editor.search.previousMatch': 'Previous match',
+  'editor.search.selectAllMatches': 'Select all matches',
+  'editor.search.replace': 'Replace',
+  'editor.search.replaceAll': 'Replace all',
+  'editor.search.close': 'Close',
+  'editor.search.matchCase': 'Match case',
+  'editor.search.regularExpression': 'Regular expression',
+  'editor.search.matchWholeWord': 'Match whole word',
+  'chat.messageBody.forkDialog.toast.forked': 'Abgezweigt von {title}',
+  'chat.messageBody.forkDialog.toast.forkFailed': 'Fehler beim Abzweigen der Sitzung',
+  'chat.permissionToast.respondFailed': 'Antwort auf die Berechtigungsanfrage fehlgeschlagen',
+  'desktopHostSwitcher.instance.localOpenChamber': 'Lokales OpenChamber',
 };
