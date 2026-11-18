@@ -364,5 +364,8 @@ export const sessionNoticesI18n = {
     'chat.sessionNotice.pullRequest.behind': 'Отстаёт от базовой ветки',
     'chat.sessionNotice.pullRequest.activity': 'Новый комментарий или ревью',
     'chat.sessionNotice.pullRequest.activityNames': 'Новый комментарий или ревью от {names}',
+    'chat.sessionNotice.pageAnswer.answered': 'Ответ на {title}: {summary}',
+    'chat.sessionNotice.pageAnswer.declined': 'Вы отклонили {title}',
+    'chat.sessionNotice.pageAnswer.notDrawn': 'Не удалось отобразить {title}',
   },
 } as const;

@@ -1438,6 +1438,8 @@ export const sidebarSectionsI18n = {
     'sessions.sidebar.sections.template.prs': 'Пулл-реквесты',
     'sessions.sidebar.sections.template.stalled': 'Зависло',
     'sessions.sidebar.sections.template.today': 'Сегодня',
+    'sessions.sidebar.sections.template.recent': 'Недавние',
+    'sessions.sidebar.sections.batchSize': 'Сессий до «Показать больше»',
     'sessions.sidebar.sections.template.projects': 'Группа проектов',
     'sessions.sidebar.sections.template.blank': 'Свой…',
     'sessions.sidebar.sections.state.running': 'Выполняется',

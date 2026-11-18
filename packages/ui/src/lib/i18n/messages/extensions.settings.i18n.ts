@@ -2676,6 +2676,8 @@ export const extensionsSettingsI18n = {
     'settings.extensions.capability.model.detail': 'Разовая генерация текста вне сессий. Расходует токены.',
     'settings.extensions.capability.shells': 'Просмотр и остановка фоновых команд',
     'settings.extensions.capability.shells.detail': 'Наблюдайте за shell-командами, которые ваши агенты выполняют в фоне, читайте их вывод и останавливайте их.',
+    'settings.extensions.capability.microphone': 'Использовать ваш микрофон',
+    'settings.extensions.capability.microphone.detail': 'Слушает через ваш микрофон — для звонков или голосового ввода. Система показывает, когда микрофон включён.',
     'settings.extensions.capability.filesystem': 'Читать и записывать файлы вне проекта',
     'settings.extensions.capability.filesystem.detail': 'Только эти расположения:',
     'settings.extensions.capability.origins': 'Отправка и получение данных напрямую',

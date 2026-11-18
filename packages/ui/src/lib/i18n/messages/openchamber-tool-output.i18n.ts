@@ -2163,7 +2163,7 @@ export const openchamberToolOutputI18n = {
     'chat.toolPart.openchamber.action.prWatch': 'Начал следить за pull request',
     'chat.toolPart.openchamber.action.prUnwatch': 'Перестал следить за pull request',
     'chat.toolPart.openchamber.action.waitList': 'Показал список ожиданий',
-    'chat.toolPart.openchamber.action.waitStart': 'Жду расширения',
+    'chat.toolPart.openchamber.action.waitStart': 'Жду',
     'chat.toolPart.openchamber.action.waitStop': 'Перестал ждать',
     'chat.toolPart.openchamber.action.workName': 'Назвал задачу',
     'chat.toolPart.openchamber.action.fileOpen': 'Показал файл',

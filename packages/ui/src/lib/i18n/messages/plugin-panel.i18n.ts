@@ -712,6 +712,8 @@ export const pluginPanelI18n = {
     'contextRail.surface.plugin.badgeAriaPlural': '{label}, {count} элементов',
     'contextRail.surface.plugin.badgeTooltipSingle': '{count} элемент',
     'contextRail.surface.plugin.badgeTooltipPlural': '{count} элементов',
+    'contextRail.surface.plugin.listeningAria': '{label}, использует ваш микрофон',
+    'contextRail.surface.plugin.listeningTooltip': 'Использует ваш микрофон',
     'chat.chatInput.toast.guestCommandNothing': '{name} не нашёл ничего для прикрепления.',
     'chat.chatInput.toast.guestCommandFailed': '/{command} не удалась: {reason}',
     'chat.chatInput.toast.guestCommandUnavailable': '{name} не ответил.',

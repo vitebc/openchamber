@@ -19,6 +19,7 @@ import { updateDialogCanaryI18n } from './update-dialog-canary.i18n';
 import { aboutReleaseNotesI18n } from './about-release-notes.i18n';
 import { updateCheckErrorsI18n } from './update-check-errors.i18n';
 import { secretRequestI18n } from './secret-request.i18n';
+import { questionsInChatI18n } from './questions-in-chat.i18n';
 import { sessionNoticesI18n } from './session-notices.i18n';
 import { settingsHintsI18n } from './settings-hints.i18n';
 import { usageStatsI18n } from './usage-stats.i18n';
@@ -28,12 +29,15 @@ import { compactionSettingsI18n } from './compaction-settings.i18n';
 import { heapSnapshotI18n } from './heap-snapshot.i18n';
 import { consoleBudgetsI18n } from './console-budgets.i18n';
 import { imageToolI18n } from './image-tool.i18n';
+import { sharePagesI18n } from './share-pages.i18n';
+import { receivedPagesI18n } from './received-pages.i18n';
 import { memoryDreamingI18n } from './memory-dreaming.i18n';
 import { usageToolI18n } from './usage-tool.i18n';
 import { openchamberToolsLayoutI18n } from './openchamber-tools-layout.i18n';
 import { openchamberToolOutputI18n } from './openchamber-tool-output.i18n';
 import { opencodeToolOutputI18n } from './opencode-tool-output.i18n';
 import { agentStatusI18n } from './agent-status.i18n';
+import { androidWidgetsI18n } from './android-widgets.i18n';
 import { selectionApprovalI18n } from './selection-approval.i18n';
 import { snippetsI18n } from './snippets.i18n';
 import { sidebarWorkI18n } from './sidebar-work.i18n';
@@ -204,6 +208,7 @@ export const dict: Record<I18nKey, string> = {
   ...aboutReleaseNotesI18n.ru,
   ...updateCheckErrorsI18n.ru,
   ...secretRequestI18n.ru,
+  ...questionsInChatI18n.ru,
   ...sessionNoticesI18n.ru,
   ...settingsHintsI18n.ru,
   ...usageStatsI18n.ru,
@@ -213,12 +218,15 @@ export const dict: Record<I18nKey, string> = {
   ...heapSnapshotI18n.ru,
   ...consoleBudgetsI18n.ru,
   ...imageToolI18n.ru,
+  ...sharePagesI18n.ru,
+  ...receivedPagesI18n.ru,
   ...memoryDreamingI18n.ru,
   ...usageToolI18n.ru,
   ...openchamberToolsLayoutI18n.ru,
   ...openchamberToolOutputI18n.ru,
   ...opencodeToolOutputI18n.ru,
   ...agentStatusI18n.ru,
+  ...androidWidgetsI18n.ru,
   ...snippetsI18n.ru,
   ...sidebarWorkI18n.ru,
   ...sidebarSectionsI18n.ru,
@@ -309,7 +317,6 @@ export const dict: Record<I18nKey, string> = {
   'common.language.turkish': 'Турецкий',
   'common.language.arabic': 'Арабский',
   'common.language.hebrew': 'Иврит',
-  'common.language.russian': 'Русский',
   'common.language.dutch': 'Нидерландский',
   'common.revealPath.finder': 'Показать в Finder',
   'common.revealPath.fileExplorer': 'Открыть в Проводнике',
@@ -846,7 +853,7 @@ export const dict: Record<I18nKey, string> = {
   'sessions.sidebar.session.status.backgroundCommand': 'Команда выполняется в фоне',
   'sessions.sidebar.session.status.backgroundImage': 'Создание изображения в фоне',
   'sessions.sidebar.session.status.waitingOnPullRequest': 'Ожидание проверок или ревью',
-  'sessions.sidebar.session.status.waitingOnExtension': 'Ожидание расширения',
+  'sessions.sidebar.session.status.waitingOnExtension': 'Ожидание таймера или расширения',
   'sessions.sidebar.session.status.pinned': 'Закреплённая сессия',
   'sessions.sidebar.session.status.movingToWorktree': 'Перемещение сессии в новый worktree',
   'sessions.sidebar.session.status.permissionRequired': 'Требуется разрешение',
@@ -1620,6 +1627,7 @@ export const dict: Record<I18nKey, string> = {
   'contextPanel.browser.device.schemeSystem': 'Авто',
   'contextPanel.browser.device.schemeLight': 'Светлая',
   'contextPanel.browser.device.schemeDark': 'Тёмная',
+  'contextPanel.browser.device.scheme': 'Оформление страницы',
   'contextPanel.browser.device.schemeFailed': 'Не удалось изменить оформление страницы',
   'contextPanel.browser.frameTitle': 'Браузер',
   'contextPanel.browser.loadFailed': 'Не удалось загрузить эту страницу',
@@ -1648,7 +1656,6 @@ export const dict: Record<I18nKey, string> = {
   'contextPanel.browser.annotate.tool.draw': 'Рисование',
   'contextPanel.browser.annotate.commentPlaceholder': 'Опишите изменение...',
   'contextPanel.browser.annotate.submit': 'Добавить',
-  'contextPanel.browser.trustNotice': 'Страницы, открытые здесь, работают с полным доступом к OpenChamber — это необходимо для инспекции и скриншотов. Открывайте только сайты, которым вы доверяете: вредоносная страница может прочитать ваши данные или действовать от вашего имени.',
   'contextPanel.tab.closeTabAria': 'Закрыть вкладку {label}',
   'contextPanel.tab.menu.close': 'Закрыть',
   'contextPanel.tab.menu.closeOthers': 'Закрыть остальные',
@@ -2427,8 +2434,6 @@ export const dict: Record<I18nKey, string> = {
   'session.newWorktree.error.noActiveProject': 'Нет активного проекта',
   'session.newWorktree.error.branchNameRequired': 'Требуется имя ветки',
   'session.newWorktree.error.worktreeDirectoryRequired': 'Требуется каталог ворктрейя',
-  'session.newWorktree.error.projectNotRegistered': 'Проект не зарегистрирован в OpenChamber',
-  'session.newWorktree.error.sessionCreateFailed': 'Не удалось создать сессию для ворктрея',
   'session.newWorktree.error.createWorktreeFailed': 'Не удалось создать ворктрей',
   'session.newWorktree.error.changeRequestAuthorityMissing': 'Этот pull request больше недоступен. Выберите его снова.',
   'session.newWorktree.mr.authorityMissing': 'Этот мердж-реквест больше недоступен. Выберите его снова.',
@@ -2537,15 +2542,7 @@ export const dict: Record<I18nKey, string> = {
   'chat.toast.opencodeRestartInterrupted.description': 'OpenCode перезапустился, пока ответ ещё формировался. Отправьте сообщение, чтобы продолжить.',
   'chat.toast.opencodeRestartInterrupted.autoResumeDescription': 'OpenCode перезапустился, пока ответ ещё формировался. Чат возобновится автоматически; отправьте сообщение, если этого не произойдёт.',
   'chat.toast.opencodeRestartInterrupted.openSession': 'Открыть сессию',
-  'editor.search.nextMatch': 'Следующее совпадение',
-  'editor.search.previousMatch': 'Предыдущее совпадение',
-  'editor.search.selectAllMatches': 'Выделить все совпадения',
-  'editor.search.replace': 'Заменить',
-  'editor.search.replaceAll': 'Заменить все',
-  'editor.search.close': 'Закрыть',
-  'editor.search.matchCase': 'Учитывать регистр',
-  'editor.search.regularExpression': 'Регулярное выражение',
-  'editor.search.matchWholeWord': 'Только целые слова',
+  'chat.toast.shareAnswer.openSession': 'Открыть сессию',
   'chat.errorBoundary.title': 'Ошибка чата',
   'chat.errorBoundary.description': 'Интерфейс чата столкнулся с ошибкой. Это может быть связано с временной проблемой сети или повреждёнными данными сообщений.',
   'chat.errorBoundary.sessionLabel': 'Сессия',
@@ -2693,8 +2690,6 @@ export const dict: Record<I18nKey, string> = {
   'chat.messageBody.forkDialog.instructions.label': 'Инструкции',
   'chat.messageBody.forkDialog.instructions.placeholder': 'Добавьте инструкции для новой сессии…',
   'chat.messageBody.forkDialog.createWorktree': 'Создать ворктрей',
-  'chat.messageBody.forkDialog.toast.forked': 'Создан форк из {title}',
-  'chat.messageBody.forkDialog.toast.forkFailed': 'Не удалось создать форк сессии',
   'chat.generatedResult.actions.copy': 'Копировать',
   'chat.generatedResult.actions.copied': 'Скопировано',
   'chat.generatedResult.commit.title': 'Сгенерированное сообщение коммита',
@@ -2870,7 +2865,6 @@ export const dict: Record<I18nKey, string> = {
   'chat.permissionCard.patterns': 'Шаблоны:',
   'chat.permissionToast.sessionFallback': 'Сессия',
   'chat.permissionToast.permissionFallback': 'Сведения о разрешении недоступны',
-  'chat.permissionToast.respondFailed': 'Не удалось ответить на запрос разрешения',
   'chat.permissionToast.labels.session': 'Сессия:',
   'chat.permissionToast.labels.permission': 'Разрешение:',
   'chat.permissionToast.actions.once': 'Один раз',
@@ -3123,8 +3117,8 @@ export const dict: Record<I18nKey, string> = {
   'projects.sharedTrust.actions': 'Действия',
   'projects.sharedTrust.skip': 'Не сейчас',
   'projects.sharedTrust.trust': 'Доверить и выполнить',
-  'projects.opencodeTrust.title': 'Разрешить OpenCode запускать код из этой папки?',
-  'projects.opencodeTrust.description': 'OpenCode запускает плагины и команды из конфигурации {path} сразу при открытии папки. Доверьтесь им один раз, и OpenChamber спросит снова только при их изменении.',
+  'projects.opencodeTrust.title': 'Доверять конфигурации OpenCode в этой папке?',
+  'projects.opencodeTrust.description': 'Открыв папку, OpenCode сразу применит всё перечисленное ниже из конфигурации {path}. Доверьтесь один раз, и OpenChamber спросит снова только при её изменении.',
   'projects.opencodeTrust.plugins': 'Плагины',
   'projects.opencodeTrust.commands': 'Команды',
   'projects.opencodeTrust.kind.package': '{name} (пакет npm)',
@@ -3133,6 +3127,12 @@ export const dict: Record<I18nKey, string> = {
   'projects.opencodeTrust.kind.lsp': 'Языковой сервер {name}',
   'projects.opencodeTrust.kind.formatter': 'Форматтер {name}',
   'projects.opencodeTrust.kind.shell': 'Оболочка',
+  'projects.opencodeTrust.kind.env': 'Переменная окружения {name}',
+  'projects.opencodeTrust.kind.file': 'Файл {path}',
+  'projects.opencodeTrust.values': 'Значения с вашего компьютера, которые он может отправить наружу',
+  'projects.opencodeTrust.permissions': 'Разрешения, которые он даёт',
+  'projects.opencodeTrust.permission.agent': 'Агент {name}',
+  'projects.opencodeTrust.permission.everyAgent': 'Все агенты',
   'projects.opencodeTrust.paused': 'Без доверия агенты не могут работать в этой папке, но вы всё ещё можете просматривать её файлы и изменения Git.',
   'projects.opencodeTrust.skip': 'В другой раз',
   'projects.opencodeTrust.trust': 'Доверять и открыть',
@@ -3254,7 +3254,6 @@ export const dict: Record<I18nKey, string> = {
   'desktopHostSwitcher.error.pairingInvalidResponse': 'Сервер вернул некорректный ответ на запрос сопряжения.',
   'desktopHostSwitcher.error.failedToOpenNewWindow': 'Не удалось открыть новое окно',
   'desktopHostSwitcher.instance.local': 'Локальный',
-  'desktopHostSwitcher.instance.localOpenChamber': 'Локальный OpenChamber',
   'desktopHostSwitcher.instance.fallback': 'Экземпляр',
   'desktopHostSwitcher.startup.title': 'SSH-экземпляр по умолчанию недоступен',
   'desktopHostSwitcher.startup.connectingTo': 'Подключение к {host}...',
@@ -3696,6 +3695,8 @@ export const dict: Record<I18nKey, string> = {
   'chat.workStatus.telemetry.toolDurationDescription': 'Время работы инструментов, включая неудачные вызовы. Параллельно работавшие инструменты считаются один раз, а не суммируются.',
   'chat.workStatus.telemetry.ttft': 'Средний TTFT',
   'chat.workStatus.telemetry.ttftDescription': 'Среднее ожидание до начала первого текста или рассуждения на каждом шаге модели. Скрыто, если у шага нет старта после создания, что обычно для шагов только с инструментами и частей с меткой времени создания.',
+  'chat.workStatus.telemetry.firstOutput': 'Среднее ожидание первого ответа',
+  'chat.workStatus.telemetry.firstOutputDescription': 'Среднее ожидание от начала каждого шага модели до того, как модель пришлёт хоть что-то: текст, рассуждение или вызов инструмента. В отличие от TTFT, шаги, начинающиеся с вызова инструмента, тоже учитываются. Скрыто для шагов из OpenCode старше 2.3.0.',
   'chat.workStatus.telemetry.steps': 'Шаги',
   'chat.workStatus.telemetry.stepsDescription': 'Сколько раз обращались к модели для этого запроса. Чтение результатов инструментов и выбор следующего действия обычно занимают ещё один шаг.',
   'chat.workStatus.telemetry.tokens': 'Токены',
@@ -4026,4 +4027,20 @@ export const dict: Record<I18nKey, string> = {
   'chat.promptHistorySearch.hint': '↑ ↓ для просмотра · Enter для загрузки · Esc для закрытия',
   'helpDialog.item.searchPromptHistory': 'Поиск по истории промптов (поле ввода чата)',
 
+  'common.language.russian': 'Русский',
+  'session.newWorktree.error.projectNotRegistered': 'Проект не зарегистрирован в OpenChamber',
+  'session.newWorktree.error.sessionCreateFailed': 'Не удалось создать сессию для ворктрея',
+  'editor.search.nextMatch': 'Следующее совпадение',
+  'editor.search.previousMatch': 'Предыдущее совпадение',
+  'editor.search.selectAllMatches': 'Выделить все совпадения',
+  'editor.search.replace': 'Заменить',
+  'editor.search.replaceAll': 'Заменить все',
+  'editor.search.close': 'Закрыть',
+  'editor.search.matchCase': 'Учитывать регистр',
+  'editor.search.regularExpression': 'Регулярное выражение',
+  'editor.search.matchWholeWord': 'Только целые слова',
+  'chat.messageBody.forkDialog.toast.forked': 'Создан форк из {title}',
+  'chat.messageBody.forkDialog.toast.forkFailed': 'Не удалось создать форк сессии',
+  'chat.permissionToast.respondFailed': 'Не удалось ответить на запрос разрешения',
+  'desktopHostSwitcher.instance.localOpenChamber': 'Локальный OpenChamber',
 };
