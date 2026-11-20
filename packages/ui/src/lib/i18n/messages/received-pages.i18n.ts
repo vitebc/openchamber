@@ -575,7 +575,6 @@ export const receivedPagesI18n = {
     'chat.sharedPage.chip.loading': 'Чтение ссылки',
     'chat.sharedPage.chip.failed': 'Не удалось прочитать эту ссылку.',
     'chat.sharedPage.chip.relayError': 'Не удалось связаться со службой публикации.',
-    'chat.sharedPage.chip.remove': 'Убрать общую страницу',
     'chat.sharedPage.pin.label': 'PIN-код',
     'chat.sharedPage.pin.digit': 'Цифра PIN-кода {n}',
     'chat.sharedPage.pin.hint': 'Введите PIN-код, чтобы открыть страницу',

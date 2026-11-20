@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test';
 
 import { subagentsI18n } from './subagents.i18n';
 
-const locales = ['de', 'fr', 'nl', 'es', 'ja', 'pt-BR', 'uk', 'ko', 'pl', 'zh-CN', 'zh-TW', 'tr', 'ar', 'he'] as const;
+const locales = ['de', 'fr', 'nl', 'es', 'ja', 'pt-BR', 'uk', 'ko', 'pl', 'zh-CN', 'zh-TW', 'tr', 'ar', 'he', 'ru'] as const;
 // "Subagents" is the Dutch word too.
 const SAME_WORD_KEYS = new Set(['contextPanel.mode.subagents']);
 
