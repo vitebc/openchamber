@@ -46,7 +46,6 @@ import { findWorktreeHoldingDirectory } from '@/lib/worktrees/worktreePaths';
 import type { ProjectEntry } from '@/lib/api/types';
 import type { WorktreeMetadata } from '@/types/worktree';
 import { toast } from '@/components/ui';
-import { useI18n } from '@/lib/i18n';
 
 const TRAY_ACTION_EVENT = 'openchamber:tray-action';
 const POLL_INTERVAL_MS = 5000;
@@ -77,7 +76,7 @@ type TrayApproval = {
 };
 
 type TrayUsageRow = { label: string; value: string };
-type TrayUsageGroup = { provider: string; rows: TrayUsageRow[]; status: string | null };
+type TrayUsageGroup = { provider: string; account: string | null; rows: TrayUsageRow[]; status: string | null };
 type TrayUsage = { mode: 'usage' | 'remaining'; groups: TrayUsageGroup[] };
 
 type TraySnapshot = {
@@ -111,12 +110,12 @@ const isTrayEnabled = (): boolean =>
   typeof window !== 'undefined' && window.__OPENCHAMBER_ELECTRON__?.trayEnabled !== false;
 
 const permissionLabel = (request: BlockingPermissionRequest): string => {
-  const head = request.action.trim() || 'Permission';
+  const head = request.action.trim();
   const resource = request.resources.find((item) => item.trim());
-  return resource ? `${head}: ${resource}` : head;
+  return head && resource ? `${head}: ${resource}` : head || resource || '';
 };
 
-const formLabel = (request: BlockingFormRequest): string => request.title.trim() || 'Question';
+const formLabel = (request: BlockingFormRequest): string => request.title.trim();
 
 const NO_PINNED_SESSIONS = new Set<string>();
 
@@ -187,36 +186,28 @@ const buildUsage = (): TrayUsage => {
     const status = !result.ok && result.error
       ? result.error
       : rows.length === 0
-        ? 'No rate limits reported'
+        ? t('header.services.noRateLimitsReported')
         : null;
-    groups.push({ provider: meta.name, rows, status });
+    const account = meta.id === 'opencode-go' ? result.accountLabel?.trim() || null : null;
+    groups.push({ provider: meta.name, account, rows, status });
   }
   return { mode, groups };
 };
 
-// Mirrors the header's instance resolution (Header.refreshCurrentInstanceLabel):
-// the local origin shows as the localized "Local OpenChamber" label; a remote
-// host shows its configured name. Async because the host config is read over IPC.
-const resolveInstanceName = async ({
-  localName,
-  fallbackName,
-}: {
-  localName: string;
-  fallbackName: string;
-}): Promise<string> => {
+const resolveInstanceName = async (): Promise<{ kind: 'local' | 'fallback' } | { kind: 'named'; name: string } | null> => {
   try {
-    if (isDesktopLocalOriginActive()) return localName;
+    if (isDesktopLocalOriginActive()) return { kind: 'local' };
     const localOrigin = (window as unknown as { __OPENCHAMBER_LOCAL_ORIGIN__?: string }).__OPENCHAMBER_LOCAL_ORIGIN__
       || window.location.origin;
     const runtimeApiBaseUrl = getRuntimeApiBaseUrl();
-    if (runtimeApiBaseUrl && locationMatchesHost(runtimeApiBaseUrl, localOrigin)) return localName;
+    if (runtimeApiBaseUrl && locationMatchesHost(runtimeApiBaseUrl, localOrigin)) return { kind: 'local' };
     const cfg = await desktopHostsGet();
     const match = cfg.hosts.find((host) =>
       runtimeApiBaseUrl ? locationMatchesHost(runtimeApiBaseUrl, getDesktopHostApiUrl(host)) : false);
-    if (match?.label?.trim()) return redactSensitiveUrl(match.label.trim());
-    return fallbackName;
+    if (match?.label?.trim()) return { kind: 'named', name: redactSensitiveUrl(match.label.trim()) };
+    return { kind: 'fallback' };
   } catch {
-    return '';
+    return null;
   }
 };
 
@@ -361,7 +352,7 @@ const buildSnapshot = (instanceName: string, includeTray: boolean): TraySnapshot
       const directory = resolveGlobalSessionDirectory(session) ?? '';
       return {
         id: session.id,
-        title: session.title || 'Untitled session',
+        title: session.title || '',
         status: rollupStatus(family),
         branch: directory ? (live.branchByDirectory.get(directory) ?? '') : '',
         unseen: hasUnreadTurn(session) ? 1 : 0,
@@ -395,8 +386,6 @@ const buildSnapshot = (instanceName: string, includeTray: boolean): TraySnapshot
 };
 
 export const useTraySync = (): void => {
-  const { t } = useI18n();
-
   React.useEffect(() => {
     if (!isTrayPlatform() || !canUseElectronDesktopIPC()) return;
     const trayEnabled = isTrayEnabled();
@@ -404,9 +393,13 @@ export const useTraySync = (): void => {
     let disposed = false;
     let lastSerialized = '';
     let flushTimer: number | null = null;
-    let instanceName = '';
+    let instance: Awaited<ReturnType<typeof resolveInstanceName>> = null;
     const flushNow = () => {
       if (disposed) return;
+      const { dictionary } = useI18nStore.getState();
+      const instanceName = instance?.kind === 'named' ? instance.name
+        : instance?.kind === 'local' ? formatMessage(dictionary, 'tray.instance.local')
+          : instance?.kind === 'fallback' ? formatMessage(dictionary, 'tray.instance.fallback') : '';
       const snapshot = buildSnapshot(instanceName, trayEnabled);
       const serialized = JSON.stringify(snapshot);
       if (serialized === lastSerialized) return;
@@ -423,6 +416,9 @@ export const useTraySync = (): void => {
     };
 
     const unsubscribeGlobal = useGlobalSessionsStore.subscribe(() => scheduleFlush());
+    const unsubscribeLocale = useI18nStore.subscribe((state, previous) => {
+      if (state.dictionary !== previous.dictionary) scheduleFlush();
+    });
     const unsubscribeGlobalStatus = useGlobalSessionStatusStore.subscribe(() => scheduleFlush());
     const unsubscribeWorkflows = useWorkflowActivityStore.subscribe(() => scheduleFlush());
     const unsubscribeShells = useBackgroundShellsStore.subscribe(() => scheduleFlush());
@@ -449,6 +445,7 @@ export const useTraySync = (): void => {
       disposed = true;
       if (flushTimer !== null) window.clearTimeout(flushTimer);
       unsubscribeGlobal();
+      unsubscribeLocale();
       unsubscribeGlobalStatus();
       unsubscribeWorkflows();
       unsubscribeShells();
@@ -467,12 +464,9 @@ export const useTraySync = (): void => {
       return stopBadgeSync;
     }
 
-    void resolveInstanceName({
-      localName: t('desktopHostSwitcher.instance.localOpenChamber'),
-      fallbackName: t('desktopHostSwitcher.instance.fallback'),
-    }).then((name) => {
+    void resolveInstanceName().then((name) => {
       if (disposed) return;
-      instanceName = name;
+      instance = name;
       flushNow();
     });
 
@@ -538,7 +532,7 @@ export const useTraySync = (): void => {
       for (const unsub of storeUnsubs.values()) unsub();
       storeUnsubs.clear();
     };
-  }, [t]);
+  }, []);
 
   React.useEffect(() => {
     if (!isTrayPlatform() || !canUseElectronDesktopIPC()) return;
@@ -556,7 +550,7 @@ export const useTraySync = (): void => {
           break;
         case 'respond-permission':
           void respondToPermission(action.sessionId, action.id, action.response).catch(() => {
-            toast.error(t('chat.permissionToast.respondFailed'));
+            toast.error('Failed to respond to permission request');
           });
           break;
       }
@@ -588,5 +582,5 @@ export const useTraySync = (): void => {
         // ignore
       }
     };
-  }, [t]);
+  }, []);
 };
