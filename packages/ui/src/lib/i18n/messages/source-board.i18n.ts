@@ -1876,6 +1876,8 @@ export const sourceBoardI18n = {
     'sourceBoard.list.toggleAria': 'רשימת פריטים, מוצג {item}',
   },
   ru: {
+    'sourceBoard.references.mentionedIn': 'упомянул это в',
+    'sourceBoard.references.open': 'Открыть {reference}',
     'sourceBoard.reply.startThread': 'Начать тред',
     'sourceBoard.reply.startThreadHint': 'Опубликовать как тред, который кто-то должен решить',
     'sourceBoard.reply.toast.threadStarted': 'Тред в {reference} начат',
