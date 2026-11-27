@@ -180,4 +180,16 @@ export const contextWindowI18n = {
     'contextPanel.window.blocked': '瀏覽器封鎖了新視窗。請允許此網站的彈出式視窗後再試一次。',
     'contextPanel.window.failed': '無法開啟面板視窗。',
   },
+  ru: {
+    'contextPanel.zone.dropCenter': 'В центре',
+    'contextPanel.zone.moveCenter': 'Переместить панель в центр',
+    'contextPanel.window.open': 'Открыть панель в отдельном окне',
+    'contextPanel.window.return': 'Вернуть панель в окно чата',
+    'contextPanel.window.show': 'Показать окно панели',
+    'contextPanel.window.returnHere': 'Вернуть панель в это окно',
+    'contextPanel.window.title': 'Панель',
+    'contextPanel.window.empty': 'Откройте что-нибудь на рейке или перетащите сюда вкладку',
+    'contextPanel.window.blocked': 'Браузер заблокировал новое окно. Разрешите всплывающие окна для этого сайта и повторите попытку.',
+    'contextPanel.window.failed': 'Не удалось открыть окно панели.',
+  },
 };
