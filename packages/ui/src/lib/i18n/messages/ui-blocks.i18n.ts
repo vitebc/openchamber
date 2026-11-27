@@ -1,6 +1,7 @@
 /** UI blocks an agent draws inside its reply (`components/chat/uiBlocks`) — merged into each locale's main dictionary. */
 export const uiBlocksI18n = {
   en: {
+    'chat.uiBlock.strayQuote': 'A quote may end a string early or be missing: put a backslash before a quote inside a string, as in \\"',
     'chat.uiBlock.partial': 'Part of this block could not be drawn.',
     'chat.uiBlock.invalid': 'This block could not be drawn.',
     'chat.uiBlock.source': 'Source',
@@ -21,6 +22,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': 'Total',
   },
   de: {
+    'chat.uiBlock.strayQuote': 'Ein Anführungszeichen beendet womöglich eine Zeichenkette zu früh oder fehlt: Setze vor ein Anführungszeichen innerhalb einer Zeichenkette einen Backslash, also \\"',
     'chat.uiBlock.partial': 'Ein Teil dieses Blocks konnte nicht dargestellt werden.',
     'chat.uiBlock.invalid': 'Dieser Block konnte nicht dargestellt werden.',
     'chat.uiBlock.source': 'Quelltext',
@@ -41,6 +43,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': 'Gesamt',
   },
   fr: {
+    'chat.uiBlock.strayQuote': 'Un guillemet termine peut-être une chaîne trop tôt ou il manque : ajoutez une barre oblique inverse devant un guillemet placé dans une chaîne, comme \\"',
     'chat.uiBlock.partial': 'Une partie de ce bloc n’a pas pu être affichée.',
     'chat.uiBlock.invalid': 'Impossible d’afficher ce bloc.',
     'chat.uiBlock.source': 'Code source',
@@ -61,6 +64,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': 'Total',
   },
   nl: {
+    'chat.uiBlock.strayQuote': 'Een aanhalingsteken sluit een tekenreeks mogelijk te vroeg af of ontbreekt: zet een backslash vóór een aanhalingsteken binnen een tekenreeks, zoals \\"',
     'chat.uiBlock.partial': 'Een deel van dit blok kon niet worden weergegeven.',
     'chat.uiBlock.invalid': 'Dit blok kon niet worden weergegeven.',
     'chat.uiBlock.source': 'Broncode',
@@ -81,6 +85,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': 'Totaal',
   },
   'zh-CN': {
+    'chat.uiBlock.strayQuote': '可能有引号提前结束了字符串，或缺少引号：请在字符串内的引号前加反斜杠，写成 \\"',
     'chat.uiBlock.partial': '此区块的部分内容无法绘制。',
     'chat.uiBlock.invalid': '无法绘制此区块。',
     'chat.uiBlock.source': '源代码',
@@ -101,6 +106,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': '合计',
   },
   'zh-TW': {
+    'chat.uiBlock.strayQuote': '可能有引號提前結束了字串，或缺少引號：請在字串內的引號前加反斜線，寫成 \\"',
     'chat.uiBlock.partial': '此區塊的部分內容無法繪製。',
     'chat.uiBlock.invalid': '無法繪製此區塊。',
     'chat.uiBlock.source': '原始碼',
@@ -121,6 +127,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': '合計',
   },
   uk: {
+    'chat.uiBlock.strayQuote': 'Можливо, лапка завчасно завершує рядок або її бракує: поставте зворотну косу риску перед лапкою всередині рядка, ось так: \\"',
     'chat.uiBlock.partial': 'Частину цього блоку не вдалося намалювати.',
     'chat.uiBlock.invalid': 'Не вдалося намалювати цей блок.',
     'chat.uiBlock.source': 'Код',
@@ -141,6 +148,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': 'Разом',
   },
   es: {
+    'chat.uiBlock.strayQuote': 'Puede que una comilla termine una cadena antes de tiempo o que falte: pon una barra invertida antes de una comilla dentro de una cadena, así: \\"',
     'chat.uiBlock.partial': 'No se pudo dibujar una parte de este bloque.',
     'chat.uiBlock.invalid': 'No se pudo dibujar este bloque.',
     'chat.uiBlock.source': 'Código fuente',
@@ -161,6 +169,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': 'Total',
   },
   'pt-BR': {
+    'chat.uiBlock.strayQuote': 'Uma aspa pode estar encerrando um texto cedo demais ou estar faltando: coloque uma barra invertida antes de uma aspa dentro do texto, assim: \\"',
     'chat.uiBlock.partial': 'Não foi possível desenhar parte deste bloco.',
     'chat.uiBlock.invalid': 'Não foi possível desenhar este bloco.',
     'chat.uiBlock.source': 'Código-fonte',
@@ -181,6 +190,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': 'Total',
   },
   ko: {
+    'chat.uiBlock.strayQuote': '따옴표가 문자열을 너무 일찍 끝냈거나 빠졌을 수 있습니다. 문자열 안의 따옴표 앞에 백슬래시를 넣으세요. 예: \\"',
     'chat.uiBlock.partial': '이 블록의 일부를 그릴 수 없습니다.',
     'chat.uiBlock.invalid': '이 블록을 그릴 수 없습니다.',
     'chat.uiBlock.source': '소스 코드',
@@ -201,6 +211,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': '합계',
   },
   pl: {
+    'chat.uiBlock.strayQuote': 'Cudzysłów może zbyt wcześnie kończyć ciąg znaków albo go brakuje: wstaw ukośnik odwrotny przed cudzysłowem wewnątrz ciągu, na przykład \\"',
     'chat.uiBlock.partial': 'Nie udało się narysować części tego bloku.',
     'chat.uiBlock.invalid': 'Nie udało się narysować tego bloku.',
     'chat.uiBlock.source': 'Kod źródłowy',
@@ -221,6 +232,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': 'Razem',
   },
   ja: {
+    'chat.uiBlock.strayQuote': '引用符が文字列を途中で終わらせているか、不足している可能性があります。文字列内の引用符の前にバックスラッシュを付けてください。例: \\"',
     'chat.uiBlock.partial': 'このブロックの一部を描画できませんでした。',
     'chat.uiBlock.invalid': 'このブロックを描画できませんでした。',
     'chat.uiBlock.source': 'ソースコード',
@@ -241,6 +253,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': '合計',
   },
   tr: {
+    'chat.uiBlock.strayQuote': 'Bir tırnak işareti dizeyi erken bitiriyor veya eksik olabilir: dize içindeki tırnak işaretinin önüne ters eğik çizgi koyun, örneğin \\"',
     'chat.uiBlock.partial': 'Bu bloğun bir kısmı çizilemedi.',
     'chat.uiBlock.invalid': 'Bu blok çizilemedi.',
     'chat.uiBlock.source': 'Kaynak kodu',
@@ -261,6 +274,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': 'Toplam',
   },
   ar: {
+    'chat.uiBlock.strayQuote': 'ربما تنهي علامة اقتباس النص مبكرًا أو أنها مفقودة: ضع شرطة مائلة عكسية قبل علامة الاقتباس داخل النص، هكذا: \u2066\\"\u2069',
     'chat.uiBlock.partial': 'تعذّر رسم جزء من هذه الكتلة.',
     'chat.uiBlock.invalid': 'تعذّر رسم هذه الكتلة.',
     'chat.uiBlock.source': 'الشيفرة المصدرية',
@@ -281,6 +295,7 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.total': 'الإجمالي',
   },
   he: {
+    'chat.uiBlock.strayQuote': 'ייתכן שמירכאה מסיימת מחרוזת מוקדם מדי או שהיא חסרה: הוסיפו לוכסן הפוך לפני מירכאה בתוך מחרוזת, כך: \u2066\\"\u2069',
     'chat.uiBlock.partial': 'לא ניתן היה לצייר חלק מהבלוק הזה.',
     'chat.uiBlock.invalid': 'לא ניתן היה לצייר את הבלוק הזה.',
     'chat.uiBlock.source': 'קוד המקור',
@@ -299,25 +314,5 @@ export const uiBlocksI18n = {
     'chat.uiBlock.chart.largest': 'הגבוה ביותר',
     'chat.uiBlock.chart.average': 'ממוצע',
     'chat.uiBlock.chart.total': 'סך הכול',
-  },
-  ru: {
-    'chat.uiBlock.partial': 'Не удалось отрисовать часть этого блока.',
-    'chat.uiBlock.invalid': 'Не удалось отрисовать этот блок.',
-    'chat.uiBlock.source': 'Источник',
-    'chat.uiBlock.sent': 'Отправлено',
-    'chat.uiBlock.send': 'Отправить',
-    'chat.uiBlock.sendFailed': 'Не отправлено. Попробуйте ещё раз.',
-    'chat.uiBlock.chosenCount': 'Выбрано {count} из {total}',
-    'chat.uiBlock.sendChosen': 'Отправить выбранное',
-    'chat.uiBlock.note.add': 'Добавить комментарий',
-    'chat.uiBlock.note.placeholder': 'Что ещё учесть',
-    'chat.uiBlock.note.label': 'Комментарий',
-    'chat.uiBlock.change': 'Изменить',
-    'chat.uiBlock.note.answerOnly': 'Ответить только комментарием',
-    'chat.uiBlock.progress.ofTotal': '{value} из {max}',
-    'chat.uiBlock.chart.changeSince': '{change} с {label}',
-    'chat.uiBlock.chart.largest': 'Наибольшее',
-    'chat.uiBlock.chart.average': 'Среднее',
-    'chat.uiBlock.chart.total': 'Итого',
   },
 } as const;
